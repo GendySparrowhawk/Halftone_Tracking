@@ -1,20 +1,23 @@
 const express = require('express');
-const { ApolloServer } = require('@apollo/server');
-const { expressMiddleware } = require("@apollo/server/express4");
 const exphbs = require("express-handlebars");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const mongoose = require('mongoose')
+const cookieParser = require('cookie-parser')
+const { GridFSBucket } = require('mongodb')
 const multer = require("multer");
 const { GridFsStorage } = require("multer-gridfs-storage");
-const { GridFSBucket } = require('mongodb')
+const userRoutes = require('./controllers/userRoutes')
 
 require("dotenv").config();
 const app = express();
 
 const PORT = process.env.PORT || 3333;
-const is_prod = process.env.NODE_ENV === "production"
+
 const connectDB = require("./config/connection");
-const { typedefs, resolvers } = require("./schema");
+connectDB();
+
+const { authenticate, adminAuth } = require('./auth');
 
 const authenticateToken = (req, res, next) => {
     const token = req.headers['authorization'];
@@ -28,21 +31,13 @@ const authenticateToken = (req, res, next) => {
         })
 }
 
-const server = new ApolloServer({
-    typedefs,
-    resolvers,
-});
-
-async function startServer() {
-    await server.start();
-
+app.use(express.json());
     const hbs = exphbs.create({});
     app.engine("handlebars", hbs.engine);
     app.set("view engine", "handlebars");
     app.set("views", path.join(__dirname, "../views"));
 
     app.use(express.static(path.join(__dirname, "../public")));
-    app.use(express.json());
 
     const db = mongoose.connection;
     let gfs;
@@ -53,19 +48,13 @@ async function startServer() {
         console.log('gfs init')
     });
 
-    app.use("/grpahql", expressMiddleware(server));
-
     app.get("/", (req, res) => {
-        res.render("home", {title: 'Home Page'});
+        res.render("home", {title: 'Halftone Tracking'});
     });
-
-    await connectDB();
+    
+    app.use('/auth', userRoutes)
 
     app.listen(PORT, () => {
         console.log(`Server started on port ${PORT}`);
         console.log("grpahql ready to go @Halftone")
     });
-
-}
-
-startServer();
