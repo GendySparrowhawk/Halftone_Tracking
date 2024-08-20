@@ -32,6 +32,7 @@ const authenticateToken = (req, res, next) => {
 }
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
     const hbs = exphbs.create({});
     app.engine("handlebars", hbs.engine);
     app.set("view engine", "handlebars");
