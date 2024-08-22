@@ -1,0 +1,38 @@
+<h1>{{user.email}}'s Profile</h1>
+
+<div class="top-nav">
+  <a href="/customers">Manage cusotmers</a>
+  <a href="/comics">Manage Comics</a>
+</div>
+
+<ul>
+  {{#each customers}}
+    <li>{{this.firstName}} {{this.lastName}}</li>
+  {{/each}}
+</ul>
+
+<h2>Comics Releasing This Week</h2>
+{{#if thisWeekComics.length}}
+  <ul>
+    {{#each thisWeekComics}}
+      <li>
+        <h3>{{this.customerName}}</h3>
+        <ul>
+          {{#each comics}}
+            <li>
+              <strong>{{this.title}}</strong>
+              - Release Date:
+              {{this.releaseDate}}
+              - Status:
+              {{this.status}}
+              - Quantity:
+              {{this.quantity}}
+            </li>
+          {{/each}}
+        </ul>
+      </li>
+    {{/each}}
+  </ul>
+{{else}}
+  <p>No comics releasing this week.</p>
+{{/if}}

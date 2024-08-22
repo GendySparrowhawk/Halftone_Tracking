@@ -27,7 +27,7 @@ router.post("/register", async (req, res) => {
       httpOnly: true,
       maxAge: 8 * 60 * 60 * 1000
     })
-    res.redirect("/");
+    res.redirect("/profile");
   } catch (err) {
     res.render("register_form", { errors: err.message});
   }
@@ -50,12 +50,20 @@ router.post("/login", async (req, res) => {
     }
     const token = await createToken(user._id);
     res.cookie("token", token, { httpOlny: true });
-    res.redirect("/");
+    res.redirect("/profile");
   } catch (err) {
     res.render("login_form", {
       errors: [err.message || "An error creating token occured call jacob"],
     });
   }
 });
+
+router.get('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: 'strict'
+  });
+  res.redirect('/')
+})
 
 module.exports = router;

@@ -23,7 +23,7 @@ const userSchema = new Schema(
       minLength: [6, "password must be between 6 and 15 characters long"],
       maxLength: [15, "password must be between 6 and 15 characters long"],
     },
-    Customers: [
+    customers: [
       {
         type: Schema.Types.ObjectId,
         ref: "Customer",

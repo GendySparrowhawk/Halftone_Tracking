@@ -31,6 +31,10 @@ const customerSchema = new Schema ({
             }
         }
     },
+    comics: [{
+        type: Schema.Types.ObjectId,
+        ref: 'CustomerComic'
+    }],
     notes: {
         type: String
     },

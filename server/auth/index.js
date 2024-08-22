@@ -14,17 +14,16 @@ async function createToken(user_id) {
 async function authenticate({ req, res }) {
   const token = req.cookies.token;
 
-  if (!token) return { res };
+  if (!token) return { user: null, res };
 
   try {
-    const data = await verify(token, process.env.JWT_SECRET, {
-      maxAge: "8hr",
-    });
+    const data = await verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(data.user_id).populate("customers");
     return { user, res };
   } catch (err) {
     console.log("failed to find user data", err.message);
+    return { user: null, res };
   }
 }
 

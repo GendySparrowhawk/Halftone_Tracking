@@ -7,7 +7,9 @@ const cookieParser = require('cookie-parser')
 const { GridFSBucket } = require('mongodb')
 const multer = require("multer");
 const { GridFsStorage } = require("multer-gridfs-storage");
-const userRoutes = require('./controllers/userRoutes')
+const userRoutes = require('./controllers/userRoutes');
+const viewRoutes = require('./controllers/viewRoutes');
+const customerRoutes = require('./controllers/customerRoutes');
 
 require("dotenv").config();
 const app = express();
@@ -52,8 +54,10 @@ app.use(express.urlencoded({ extended: true }));
     app.get("/", (req, res) => {
         res.render("home", {title: 'Halftone Tracking'});
     });
-    
-    app.use('/auth', userRoutes)
+    app.use(cookieParser());
+    app.use('/', viewRoutes);
+    app.use('/auth', userRoutes);
+    app.use('/cust', customerRoutes)
 
     app.listen(PORT, () => {
         console.log(`Server started on port ${PORT}`);
