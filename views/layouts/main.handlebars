@@ -6,24 +6,23 @@
     <link rel="stylesheet" href="/css/main.css" />
   </head>
   <body>
-    <div class="corner-nav">
+    <div class="top-nav">
       {{#if user}}
-        <a href="/profile" class="btn prof-btn">profile</a>
-        <a href="/auth/logout" class="btn logout-btn">touch grass</a>
+        <a href="/profile" class="btn prof-btn">Profile</a>
+        <a href="/auth/logout" class="btn logout-btn">Logout</a>
       {{else}}
-        <a href="/auth/register" class="btn reg-btn">register</a>
-        <a href="/auth/login" class="btn login-btn">login</a>
+        <a href="/auth/register" class="btn reg-btn">Register</a>
       {{/if}}
     </div>
     {{{body}}}
     <div class="footer">
       <a href="https://github.com/GendySparrowhawk">
         <img
-          src="/assets/GitHub-Mark-ea2971cee799.png"
+          src="/assets/git_hub.png"
           alt="Git Hub"
         /></a>
-      <p>&copy; jacob Hoefer 2024</p>
+      <p>&copy; Jacob Hoefer 2024</p>
     </div>
-    <script src="/js/scripts.js"></script>
   </body>
+    <script src="/js/script.js"></script>
 </html>

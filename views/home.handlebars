@@ -1,5 +1,21 @@
 
 
-
+<div calss="header">
   <h1>Welcome to Halftone!</h1>
-  <p>This is the home page.</p>
+
+</div>
+  <div class="div-form">
+  <form class="my-form" action="/auth/login" method="POST">
+    <h1 class="gamer">Login</h1>
+
+    {{#each errors}}
+    <p class="error text-center">{{this}}</p>
+    {{/each}}
+
+    <div class="form-input">
+      <input type="text" name="email" placeholder="please enter your email address">
+      <input type="password" name="password" placeholder="please enter your password">
+      <button class="my-button">Submit</button>
+    </div>
+</div>
+</form>
