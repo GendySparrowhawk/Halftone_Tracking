@@ -5,6 +5,13 @@ const Customer = require("./Customer");
 
 const userSchema = new Schema(
   {
+    userName: {
+      type: String,
+      required: true,
+      minLength: [3, "your username must be at least 3 characers long"],
+      maxLength: [10, "your username must be shorter than 10 charcaters"],
+      unique: true
+    },
     email: {
       type: String,
       unique: true,
@@ -39,11 +46,11 @@ const userSchema = new Schema(
         return is_vaild;
       },
     },
-    toJson: {
-      transform(_, user) {
-        delete user._v;
-        delete user.password;
-        return user;
+    toJSON: {
+      transform(doc, ret) {
+        delete ret._v;
+        delete ret.password;
+        return ret;  
       },
     },
   }

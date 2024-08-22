@@ -1,19 +1,26 @@
+<div class="cust-nav">
+  <a href="">
+    <i class="fa-solid fa-square-plus"></i>
+  </a>
+</div>
 <h1>Your Customers</h1>
+
 <ul>
   {{#each customers}}
-    <li>{{this.firstName}} {{this.lastName}}</li>
+  <li>{{this.firstName}} {{this.lastName}}</li>
   {{/each}}
 </ul>
-<form action="/customers" method="POST">
-  {{#each errors}}
+<div class="div-form">
+  <form class="my-form" action="/customers" method="POST">
+    {{#each errors}}
     <p class="error text-center">{{this}}</p>
-  {{/each}}
-  <div>
-    <input type="text" name="firstName" placeholder="First Name" />
-    <input type="text" name="lastName" placeholder="Last Name" />
-    <input type="text" name="email" placeholder="Email" />
-    <input type="text" name="phoneNumber" placeholder="Phone Numer" />
-    <button>Submit</button>
-
-  </div>
+    {{/each}}
+    <div>
+      <input type="text" name="firstName" placeholder="First Name" />
+      <input type="text" name="lastName" placeholder="Last Name" />
+      <input type="text" name="email" placeholder="Email" />
+      <input type="text" name="phoneNumber" placeholder="Phone Numer" />
+      <button>Submit</button>
+    </div>
+</div>
 </form>

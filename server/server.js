@@ -21,18 +21,7 @@ connectDB();
 
 const { authenticate, adminAuth } = require('./auth');
 
-const authenticateToken = (req, res, next) => {
-    const token = req.headers['authorization'];
-    if(token === null) return res.sendStatus(401)
-
-        jwt.verify(token, process.env.JWT_Secret, (err, user) => {
-            if (err) return res.sendStatus(403);
-            req.user = user
-
-            next();
-        })
-}
-
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
     const hbs = exphbs.create({});
@@ -54,7 +43,6 @@ app.use(express.urlencoded({ extended: true }));
     app.get("/", (req, res) => {
         res.render("home", {title: 'Halftone Tracking'});
     });
-    app.use(cookieParser());
     app.use('/', viewRoutes);
     app.use('/auth', userRoutes);
     app.use('/cust', customerRoutes)

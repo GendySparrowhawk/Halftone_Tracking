@@ -1,9 +1,9 @@
 const { sign, verify } = require("jsonwebtoken");
 const User = require("../models/User");
 
-async function createToken(user_id) {
+async function createToken(user) {
   try {
-    const token = await sign({ user_id }, process.env.JWT_SECRET);
+    const token = await sign({ user_id: user._id }, process.env.JWT_SECRET);
 
     return token;
   } catch (err) {
@@ -11,19 +11,21 @@ async function createToken(user_id) {
   }
 }
 
-async function authenticate({ req, res }) {
+async function authenticate({ req, res, next }) {
+  console.log("cookies: ", req.cookies);
   const token = req.cookies.token;
 
-  if (!token) return { user: null, res };
+  if (!token) return res.status(401).json({ message: "No token found"});
 
   try {
-    const data = await verify(token, process.env.JWT_SECRET);
+    const data = verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(data.user_id).populate("customers");
-    return { user, res };
+    req.user = user;
+    next();
   } catch (err) {
     console.log("failed to find user data", err.message);
-    return { user: null, res };
+    return res.status(401).json({ message: "Invalid Token"});
   }
 }
 
