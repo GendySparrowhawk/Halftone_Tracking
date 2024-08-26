@@ -1,7 +1,17 @@
 const { model, Schema } = require("mongoose");
 const Writer = require("./writer");
 const Artist = require("./Artist");
-const Series = require('./Series');
+const Series = require("./Series");
+const variantSchema = new Schema({
+  variantName: {
+    type: String,
+    required: true,
+  },
+  coverImage: {
+    type: Schema.Types.ObjectId,
+    ref: "CoverImage",
+  },
+});
 
 const comicSchema = new Schema({
   title: {
@@ -24,6 +34,10 @@ const comicSchema = new Schema({
   cover: {
     type: String,
     default: "A",
+  },
+  coverImage: {
+    type: Schema.Types.ObjectId,
+    ref: "fs.files",
   },
   isIncentive: {
     type: Boolean,
