@@ -6,10 +6,10 @@ const Customer = require("../models/Customer");
 const CustomerComic = require("../models/CustomerComic");
 
 // profile routes
-router.get("/profile", async (req, res) => {
+router.get("/profile", authenticate, async (req, res) => {
   try {
     console.log("route attempted /profile");
-    const { user, res: response } = await authenticate({ req, res });
+    const user = req.user;
     if (!user) {
       return res.redirect("/auth/login", {
         errors: ["you must be logged in to view these details"],
@@ -26,7 +26,7 @@ router.get("/profile", async (req, res) => {
           model: "Comic",
         },
       },
-    });
+    }).lean();
 
     const startOfWeek = new Date();
     startOfWeek.setHours(0, 0, 0, 0);

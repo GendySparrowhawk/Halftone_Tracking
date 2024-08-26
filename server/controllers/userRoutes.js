@@ -41,9 +41,10 @@ router.get("/login", (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { userName, password } = req.body;
+  console.log(req)
   try {
     const user = await User.findOne({ userName });
-    if (!user) {
+    if (!user) {  
       return res.render("login_form", {
         errors: ["no user with that email found"],
       });
@@ -52,9 +53,9 @@ router.post("/login", async (req, res) => {
     if (!validPass) {
       return res.render("login_form", { errors: ["invalid password"] });
     }
-    const token = await createToken(user._id);
+    const token = await createToken(user);
     res.cookie("token", token, { httpOnly: true });
-    res.render("profile", { user });
+    res.redirect('/profile')
   } catch (err) {
     res.render("login_form", {
       errors: [err.message || "An error creating token occured call jacob"],

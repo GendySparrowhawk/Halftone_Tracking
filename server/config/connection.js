@@ -6,7 +6,7 @@ const dbURI = is_prod ? process.env.DB_URL : 'mongodb://127.0.0.1:27017/Halftone
 const connectDB = async () => {
   try {
     await mongoose.connect(dbURI, {
-      useNewUrlParser: true,
+      // useNewUrlParser: true,
       useUnifiedTopology: true,
     });
     console.log("MongoDB connected successfully");

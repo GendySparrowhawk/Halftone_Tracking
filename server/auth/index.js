@@ -1,31 +1,39 @@
 const { sign, verify } = require("jsonwebtoken");
 const User = require("../models/User");
+const cookieParser = require("cookie-parser");
 
 async function createToken(user) {
   try {
-    const token = await sign({ user_id: user._id }, process.env.JWT_SECRET);
-
+    const token = sign({ user_id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "8h",
+    });
+    console.log(token);
     return token;
   } catch (err) {
     console.log("jwt failed to create", err.message);
   }
 }
 
-async function authenticate({ req, res, next }) {
-  console.log("cookies: ", req.cookies);
-  const token = req.cookies.token;
-
-  if (!token) return res.status(401).json({ message: "No token found"});
-
+async function authenticate(req, res, next) {
   try {
-    const data = verify(token, process.env.JWT_SECRET);
+    console.log("auth?: ", req);
+    const token = req.cookies.token;
 
-    const user = await User.findById(data.user_id).populate("customers");
+    if (!token) {
+      return res.status(401).json({ message: "no token found" });
+    }
+    const decoded = verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.user_id).populate("customers");
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    console.log(`authenticated user: ${user}`);
     req.user = user;
     next();
   } catch (err) {
-    console.log("failed to find user data", err.message);
-    return res.status(401).json({ message: "Invalid Token"});
+    console.log("Failed to get user data", err.message);
+    return res.status(401).json({ message: "Invalid token" });
   }
 }
 
