@@ -1,6 +1,6 @@
 const { sign, verify } = require("jsonwebtoken");
 const User = require("../models/User");
-const cookieParser = require("cookie-parser");
+
 
 async function createToken(user) {
   try {
@@ -16,7 +16,7 @@ async function createToken(user) {
 
 async function authenticate(req, res, next) {
   try {
-    console.log("auth?: ", req);
+    // console.log("auth?: ", req);
     const token = req.cookies.token;
 
     if (!token) {
@@ -37,7 +37,20 @@ async function authenticate(req, res, next) {
   }
 }
 
-const adminAuth = (req, res, next) => {
+async function createAdminToken(user) {
+  try {
+    const token = sign({ user_id: user._id }, process.env.ADMIN_TOKEN_SECTRET, {
+      expiresIn: "8h",
+    });
+    console.log(token);
+    return token;
+  } catch (err) {
+    console.log("Failed to create admin token");
+    return res.status(401).json({ message: "token creation failed" });
+  }
+}
+
+async function adminAuth(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(403).json({ message: "No token found" });
@@ -54,6 +67,6 @@ const adminAuth = (req, res, next) => {
   } catch (err) {
     res.status(401).json({ message: "Invalid admin token" });
   }
-};
+}
 
-module.exports = { createToken, authenticate, adminAuth };
+module.exports = { createToken, authenticate, adminAuth, createAdminToken };

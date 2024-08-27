@@ -18,6 +18,20 @@ body {
   display: block;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  font-size: larger;
+  background-color: #70a2c4;
+  padding: 10px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+}
+
 .footer {
   display: flex;
   justify-content: center;
@@ -33,6 +47,10 @@ body {
 a {
   text-decoration: none;
   color: rgb(219, 234, 243);
+}
+
+a:hover {
+  color: #3498db;
 }
 
 .div-form {
@@ -68,7 +86,7 @@ a {
   border-radius: 4px;
   padding: 10px 20px;
   color: rgb(219, 234, 243);
-  font-family: "Arial, sans-serif";
+  font-family: "Montserrat", sans-serif;
   font-size: 1.2rem;
   cursor: pointer;
 }

@@ -59,19 +59,15 @@ router.post("/", authenticate, async (req, res) => {
       email,
       phoneNumber,
     });
-
     console.log(
       `new cusotmer ${newCustomer.firstName} ${newCustomer.lastName} added`
     );
-
     await newCustomer.save();
-
     await User.findByIdAndUpdate(req.user._id, {
       $push: { customers: newCustomer._id },
     });
 
     console.log(`cust added to ${req.user.userName}`);
-
     res.redirect("/cust");
   } catch (err) {
     console.error("Error adding customers: ", err.message);

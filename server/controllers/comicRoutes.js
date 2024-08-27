@@ -37,4 +37,16 @@ const upload = multer({ storage });
 
 router.post('/upload', upload.single('coverImage'), async (req, res) => {
     const { title, issue, releaseDate, series } =req.body;
+
+    const newComic = new Comic({
+      title,
+      issue,
+      releaseDate,
+      series,
+      coverImage: req.file.id,
+    });
+
+    try {
+      await newComic.save();
+    }
 })

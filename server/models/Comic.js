@@ -2,14 +2,19 @@ const { model, Schema } = require("mongoose");
 const Writer = require("./writer");
 const Artist = require("./Artist");
 const Series = require("./Series");
+const { deflate } = require("zlib");
 const variantSchema = new Schema({
-  variantName: {
+  name: {
     type: String,
     required: true,
   },
+  isIncentive: {
+    type: Boolean,
+    deflult: false
+  },
   coverImage: {
     type: Schema.Types.ObjectId,
-    ref: "CoverImage",
+    ref: "fs.files",
   },
 });
 
@@ -31,18 +36,7 @@ const comicSchema = new Schema({
       ref: "Series",
     },
   ],
-  cover: {
-    type: String,
-    default: "A",
-  },
-  coverImage: {
-    type: Schema.Types.ObjectId,
-    ref: "fs.files",
-  },
-  isIncentive: {
-    type: Boolean,
-    default: false,
-  },
+  variants: [variantSchema],
   writers: [
     {
       type: Schema.Types.ObjectId,

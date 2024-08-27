@@ -4,14 +4,7 @@
   </a>
 
 </div>
-<h1>Your Customers</h1>
 
-<ul>
-  {{#each customers}}
-  <li>
-    <a href="/cust/">{{this.firstName}} {{this.lastName}}</a></li>
-  {{/each}}
-</ul>
 <div class="div-form">
   <form class="my-form" action="/cust" method="POST">
     {{#each errors}}

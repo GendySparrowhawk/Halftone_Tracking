@@ -1,6 +1,6 @@
 $main_color: #1a394e;
 $secondary_color: #3498db;
-$my_font: "Arial, sans-serif";
+$my_font: "Montserrat", sans-serif;
 $font_color: rgb(219, 234, 243);
 
 html,
@@ -25,6 +25,19 @@ body {
   display: block;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  font-size: larger;
+  background-color: #70a2c4;
+  padding: 10px;
+  font-family: $my_font;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+}
 .footer {
   display: flex;
   justify-content: center;
@@ -42,6 +55,11 @@ a {
   text-decoration: none;
   color: $font_color;
 }
+
+a:hover {
+  color: $secondary_color;
+}
+
 .div-form {
   display: block;
   margin: 0 auto;

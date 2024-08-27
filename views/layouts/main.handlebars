@@ -4,28 +4,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{title}}</title>
     <link rel="stylesheet" href="/css/main.css" />
-    <script src="https://kit.fontawesome.com/f15672762c.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/f15672762c.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <div class="top-nav">
-      {{#if user}}
-      <a href="/cust">Cusomters</a>
-      <a href="/comics">Comics</a>
-        <a href="/profile">Profile</a>
-        <a href="/auth/logout">Logout</a>
-      {{else}}
-        <a href="/auth/register" class="btn reg-btn">Register</a>
-      {{/if}}
+    <div class="header">
+      <div class="left-nav">
+        {{#if user}}
+          <a href="/profile">Home</a>
+          <a href="/auth/logout">Logout</a>
+        {{else}}
+          <a href="/auth/register" class="btn reg-btn">Register</a>
+        {{/if}}
+      </div>
+      <div class="right-nav">
+        {{#if user}}
+          <button id="addCustBtn" class="nav-button">Add Customer</button>
+          <button id="addComicBtn" class="nav-button">Add Comic</button>
+        {{/if}}
+      </div>
+    </div>
+
+    <div id="custFrom" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form class="addform" action="/cust/quick" method="POST">
+          <input type="text" name="firstName" placeholder="First Name" />
+          <input type="text" name="lastName" placeholder="Last Name" />
+          <input type="text" name="email" placeholder="Email" />
+          <input type="text" name="phoneNumber" placeholder="555-555-5555" />
+          <button type="submit">Add Customer</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="comicFrom" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form
+          class="addform"
+          action="/comics/quick"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <input type="text" name="title" placeholder="Titile" />
+          <input type="number" name="issue" placeholder="Issue #" />
+          <input type="text" name="series" placeholder="Series" />
+          <input type="date" name="releaseDate" placeholder="Release Date" />
+          <input type="file" name="coverImage" />
+          <button type="submit">Add Comic</button>
+        </form>
+      </div>
     </div>
     {{{body}}}
     <div class="footer">
       <a href="https://github.com/GendySparrowhawk">
-        <img
-          src="/assets/git_hub.png"
-          alt="Git Hub"
-        /></a>
+        <img src="/assets/git_hub.png" alt="Git Hub" /></a>
       <p>&copy; Jacob Hoefer 2024</p>
     </div>
   </body>
-    <script src="/js/script.js"></script>
+  <script src="/js/script.js"></script>
 </html>
