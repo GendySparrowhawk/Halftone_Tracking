@@ -5,7 +5,7 @@ body {
   height: 100%;
   width: 100%;
   background-color: #1a394e;
-  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-family: "Montserrat", sans-serif;
   color: rgb(219, 234, 243);
   background-size: cover;
 }
@@ -30,6 +30,33 @@ body {
 .modal {
   display: none;
   position: fixed;
+  z-index: 1;
+  margin: 0 auto;
+  overflow: auto;
+  width: 600px;
+  height: 400px;
+  background-color: #1a394e;
+  box-shadow: -4px 10px 23px 0px rgba(0, 0, 0, 0.75);
+}
+.modal .modal-content {
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .footer {

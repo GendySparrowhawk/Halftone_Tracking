@@ -46,7 +46,7 @@ router.post('/upload', upload.single('coverImage'), async (req, res) => {
       coverImage: req.file.id,
     });
 
-    try {
-      await newComic.save();
-    }
+    // try {
+    //   await newComic.save();
+    // }
 })

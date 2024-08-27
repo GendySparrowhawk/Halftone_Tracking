@@ -4,6 +4,24 @@
   </a>
 
 </div>
+<div class="cust-box">
+  {{#each user.customers}}
+  <div class="one-cust">
+    <div class="name">
+      <h1>{{this.firstName}}, {{this.lastName}}</h1>
+    </div>
+    <div class="new-comics">
+      <h2>{{this.comic.title}} #{{this.comic.issue}}</h2>
+      {{#each comic.variants}}
+      {{#if this._id}}
+      <img src="/image/{{this.coverImage._id}}" alt="{{this.title}} cover">
+      <p>{{his.name}}</p>
+      {{/if}}
+      {{/each}}
+    </div>
+  </div>
+  {{/each}}
+</div>
 
 <div class="div-form">
   <form class="my-form" action="/cust" method="POST">

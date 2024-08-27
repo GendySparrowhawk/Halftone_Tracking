@@ -2,6 +2,7 @@ $main_color: #1a394e;
 $secondary_color: #3498db;
 $my_font: "Montserrat", sans-serif;
 $font_color: rgb(219, 234, 243);
+$my_shadow: -4px 10px 23px 0px rgba(0, 0, 0, 0.75);
 
 html,
 body {
@@ -12,7 +13,7 @@ body {
   height: 100%;
   width: 100%;
   background-color: $main_color;
-  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-family: $my_font;
   color: $font_color;
   background-size: cover;
 }
@@ -37,7 +38,36 @@ body {
 .modal {
   display: none;
   position: fixed;
+  z-index: 1;
+  margin: 0 auto;
+  overflow: auto;
+  width: 600px;
+  height: 400px;
+  background-color: $main_color;
+  box-shadow: $my_shadow;
+
+  .modal-content {
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
 }
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .footer {
   display: flex;
   justify-content: center;
