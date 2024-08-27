@@ -10,10 +10,11 @@ const { GridFsStorage } = require("multer-gridfs-storage");
 const userRoutes = require("./controllers/userRoutes");
 const viewRoutes = require("./controllers/viewRoutes");
 const customerRoutes = require("./controllers/customerRoutes");
+const comicRoutes = require("./controllers/comicRoutes");
 const { authenticate, adminAuth } = require("./auth");
 const PORT = process.env.PORT || 3333;
 
-const connectDB = require("./config/connection");
+const { connectDB } = require("./config/connection");
 connectDB();
 
 require("dotenv").config();
@@ -43,6 +44,7 @@ app.get("/", (req, res) => {
 app.use("/", viewRoutes);
 app.use("/auth", userRoutes);
 app.use("/cust", customerRoutes);
+app.use("/comics", comicRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);

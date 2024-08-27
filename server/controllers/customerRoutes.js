@@ -29,16 +29,21 @@ router.get("/", authenticate, async (req, res) => {
     endOfWeek.setDate(endOfWeek.getDate() + 7);
 
     customers.forEach((customer) => {
-      customer.newComics = customer.comics.filter(
-        (custComic) =>
-          custComic.comic.releaseDate >= startOfWeek &&
-          custComic.comic.releaseDate <= endOfWeek
-      );
+      customer.comics = customer.comics.map((custComic) => ({
+        ...custComic,
+        comic: {
+          ...custComic.comic,
+          variants: custComic.comic.variants.map((variant) => ({
+            ...variant,
+            coverImage: variant.coverImage ? { ...variant.coverImage } : null,
+          })),
+        },
+      }));
     });
 
     res.render("customers", {
-      user: req.user,
-      customers,
+      user: JSON.parse(JSON.stringify(req.user)),
+      customers: JSON.parse(JSON.stringify(customers)),
       errors: [],
     });
   } catch (err) {
