@@ -55,7 +55,7 @@ router.get("/", authenticate, async (req, res) => {
 // get a customer specific page
 router.get("/:customerId", authenticate, async (req, res) => {
   try {
-    const customerId = req.params.cusotmerId;
+    const customerId = req.params.customerId;
     const customer = await Customer.findById(customerId).populate({
       path: "comics",
       model: "CustomerComic",
@@ -63,15 +63,16 @@ router.get("/:customerId", authenticate, async (req, res) => {
         path: "comic",
         model: "Comic",
       },
-    });
+    }).lean();
 
-    if (!customer || !req.user.customers.includes(customerId)) {
-      return res.status(404).render("404", { message: "customer not found" });
+    if (!customer) {
+      console.log('error getting id')
+      return res.status(404).render("customers", { message: "customer not found" });
     }
 
     res.render("customer-detail", {
       user: req.user,
-      customer: customer.toObject(),
+      customer: customer,
     });
   } catch (err) {
     console.error("erro fetching details: ", err.message);
@@ -144,7 +145,7 @@ router.post("/quick", authenticate, async (req, res) => {
     console.log(
       `new cusotmer ${newCustomer.firstName} ${newCustomer.lastName} added`
     );
-    return res.json({ message: "Customer added successfully" });
+    return res.redirect(`/cust/${newCustomer._id}`)
   } catch (err) {
     console.error("Error adding cust: ", err.message);
     return res

@@ -8,7 +8,11 @@
   {{#each user.customers}}
   <div class="one-cust">
     <div class="name">
-      <h1>{{this.firstName}}, {{this.lastName}}</h1>
+      <h1>
+        <a href="/cust/{{this._id}}">{{this.firstName}}, {{this.lastName}}
+
+        </a>
+        </h1>
     </div>
     <div class="new-comics">
       <h2>{{this.comic.title}} #{{this.comic.issue}}</h2>

@@ -37,10 +37,10 @@ const comicSchema = new Schema({
     },
   ],
   variants: [variantSchema],
-  writers: [
+  auhtors: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Writer",
+      ref: "Author",
     },
   ],
   artists: [

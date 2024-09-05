@@ -1,6 +1,6 @@
 const { model, Schema } = require("mongoose");
 
-const writerSchema = new Schema({
+const authorSchema = new Schema({
   firstName: {
     type: String,
     required: true,
@@ -11,5 +11,5 @@ const writerSchema = new Schema({
   },
 });
 
-const Writer = model("Writer", writerSchema);
-module.exports = Writer;
+const Author = model("Author", authorSchema);
+module.exports = Author;
