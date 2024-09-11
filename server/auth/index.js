@@ -28,7 +28,7 @@ async function authenticate(req, res, next) {
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
-    console.log(`authenticated user: ${user}`);
+    // console.log(`authenticated user: ${user}`);
     req.user = user;
     next();
   } catch (err) {

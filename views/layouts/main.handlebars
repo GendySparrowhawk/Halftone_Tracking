@@ -36,6 +36,9 @@
     <div id="custFrom" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
+        {{#each errors}}
+          <p class="error text-center">{{this}}</p>
+        {{/each}}
         <form class="addform" action="/cust/quick" method="POST">
           <input type="text" name="firstName" placeholder="First Name" />
           <input type="text" name="lastName" placeholder="Last Name" />
@@ -55,10 +58,14 @@
           method="POST"
           enctype="multipart/form-data"
         >
+          {{#each errors}}
+            <p class="error">{{this}}</p>
+          {{/each}}
           <input type="text" name="title" placeholder="Titile" />
           <input type="number" name="issue" placeholder="Issue #" />
-          <input type="text" name="series" placeholder="Series" />
           <input type="date" name="releaseDate" placeholder="Release Date" />
+          <input type="text" name="seriesTitle" placeholder="Series" />
+           <input type="hidden" name="seriesId" value="{{seriesId}}" />
           <input type="file" name="coverImage" />
           <button type="submit" class="my-button">Add Comic</button>
         </form>

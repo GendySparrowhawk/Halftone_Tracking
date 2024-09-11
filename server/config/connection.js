@@ -1,30 +1,30 @@
 const mongoose = require("mongoose");
-const Grid = require("gridfs-stream");
+const { S3Client } = require("@aws-sdk/client-s3");
+require("dotenv").config();
 
 const is_prod = process.env.NODE_ENV === "production";
 const dbURI = is_prod
-  ? process.env.DB_URL
+  ? process.env.MONGODB_URI
   : "mongodb://127.0.0.1:27017/Halftone";
 
-let gfs;
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(dbURI, {
-      // useNewUrlParser: true,
+    mongoose.connect(dbURI, {
       useUnifiedTopology: true,
     });
-    console.log("MongoDB connected successfully");
-    const conn = mongoose.connection;
-    conn.once("open", () => {
-      gfs = Grid(conn.db, mongoose.mongo);
-      gfs.collection("uploads");
-      console.log("grid fs connected");
-    });
+    console.log("monogo db connected");
   } catch (err) {
-    console.error("Failed to connect to MongoDB", err);
+    console.error("mongo db failed to connect: ", err);
     process.exit(1);
   }
 };
 
-module.exports = { connectDB, gfs };
+module.exports = { connectDB, s3 };

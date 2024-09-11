@@ -7,6 +7,8 @@ const User = require("../models/User");
 const Series = require("../models/Series");
 const Artist = require("../models/Artist");
 const Author = require("../models/Author");
+const gfs = require("../config/connection");
+const Customer = require("../models/Customer");
 
 // view comics page for a user
 router.get("/", authenticate, async (req, res) => {
@@ -34,18 +36,18 @@ router.get("/", authenticate, async (req, res) => {
 // get a single comics page
 router.get("/:comicId", authenticate, async (req, res) => {
   try {
+    const userId = req.user._id;
     const comicId = req.params.comicId;
 
-    const comic = await Comic.findById(comic)
-      .populate({
-        path: "comics",
-      })
-      .lean();
+    const comic = await Comic.findById(comicId).populate('series').populate('auhtors').populate('artists').lean()
 
-    res.render("comic-detail", {
-      user: req.user,
-      comic: comic,
-    });
+    if (!comic) {
+      return res.status(404).render('404', { message: "comic not found" })
+    }
+
+    const customers = await Customer.find ({ userId })
+
+    res.render("single-comic", { comic, customers });
   } catch (err) {
     console.error("error fetching comic", err.message);
     return res.status(404).render("comics", { message: "comic not found" });
@@ -53,7 +55,7 @@ router.get("/:comicId", authenticate, async (req, res) => {
 });
 
 // create a comic
-router.post("/quick", upload.single("coverImage"), async (req, res) => {
+router.post("/", upload.single("coverImage"), async (req, res) => {
   try {
     const {
       title,
@@ -127,6 +129,54 @@ router.post("/quick", upload.single("coverImage"), async (req, res) => {
     return res
       .status(500)
       .json({ message: "Server error adding comics recheck routes" });
+  }
+});
+
+router.post("/quick", upload.single("coverImage"), async (req, res) => {
+  console.log("quick add route attempted");
+  console.log("Request body:", req.body);
+console.log("File received:", req.file);
+  try {
+    const { title, issue, releaseDate, seriesTitle, seriesId } = req.body;
+    let series;
+    if (seriesId) {
+      series = await Series.findById(seriesId);
+    }
+    if (!series && seriesTitle) {
+      series = new Series({ title: seriesTitle });
+      await series.save();
+    }
+
+    if (!series && !seriesTitle) {
+      return res
+        .status(400)
+        .json({
+          message: "You must attach this comic to a series, even a one shot",
+        });
+    }
+
+    const newComic = new Comic({
+      title,
+      issue,
+      releaseDate,
+      series: series._id,
+      variants: [
+        {
+          name: "A cover",
+          isIncentive: false,
+          coverImage: req.file ? req.file.location : null,
+        },
+      ],
+    });
+    await newComic.save();
+    series.comics.push(newComic._id);
+    await series.save();
+    console.log(`New comic ${title} added to series ${series.title}`);
+    return res.redirect(`/comics/${newComic._id}`)
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Error adding comic tell jacob to check route" });
   }
 });
 

@@ -1,27 +1,24 @@
-const multer = require('multer');
-const { GridFsStorage } = require('multer-gridfs-storage');
-const crypto = require("crypto");
-const path = require('path');
-require('dotenv').config();
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const path = require("path");
+const { s3 } = require("../config/connection");
+const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
-const storage = new GridFsStorage({
-    url: process.env.MONGODB_URI,
-    file: (req, file) => {
-        return new Promise((resolve, reject) => {
-            crypto.randomBytes(16, (err, buf) => {
-                if (err) {
-                    return reject(err);
-                }
-                const filename = buf.toString('hex') + path.extname(file.originalname);
-                const fileInfo = {
-                    filename: filename,
-                    bucketName: 'uploads'
-                };
-                resolve(fileInfo)
-            })
-        })
-    }
+
+require("dotenv").config();
+
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_S3_BUCKET,
+    metadata: (req, file, cb) => {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: (req, file, cb) => {
+      const filename = Date.now().toString() + path.extname(file.originalname);
+      cb(null, filename);
+    },
+  }),
 });
 
-const upload = multer({ storage });
 module.exports = upload;

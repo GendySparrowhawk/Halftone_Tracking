@@ -1,0 +1,39 @@
+<div class="comic-details">
+    <h1>{{comic.title}}</h1>
+    <p><strong>Issue:</strong> {{comic.issue}}</p>
+    <p><strong>Release Date:</strong> {{#if comic.releaseDate}}{{formatDate comic.releaseDate}}{{else}}N/A{{/if}}</p>
+    <p><strong>Series:</strong> {{#if comic.series.length}}{{comic.series.title}}{{else}}N/A{{/if}}</p>
+    
+    {{#if comic.variants.length}}
+      <h2>Variants</h2>
+      <ul>
+        {{#each comic.variants}}
+          <li>
+            <h3>{{this.name}}</h3>
+            <p><strong>Incentive:</strong> {{#if this.isIncentive}}Yes{{else}}No{{/if}}</p>
+            {{#if this.coverImage}}
+              <img src="{{this.coverImage}}" alt="{{this.name}}">
+            {{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    {{/if}}
+    
+    {{#if comic.authors.length}}
+      <h2>Authors</h2>
+      <ul>
+        {{#each comic.authors}}
+          <li>{{this.name}}</li>
+        {{/each}}
+      </ul>
+    {{/if}}
+
+    {{#if comic.artists.length}}
+      <h2>Artists</h2>
+      <ul>
+        {{#each comic.artists}}
+          <li>{{this.name}}</li>
+        {{/each}}
+      </ul>
+    {{/if}}
+  </div>

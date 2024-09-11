@@ -1,8 +1,8 @@
 const { model, Schema } = require("mongoose");
-const Writer = require("./writer");
+const Author = require("./Author");
 const Artist = require("./Artist");
 const Series = require("./Series");
-const { deflate } = require("zlib");
+
 const variantSchema = new Schema({
   name: {
     type: String,
@@ -13,8 +13,7 @@ const variantSchema = new Schema({
     deflult: false
   },
   coverImage: {
-    type: Schema.Types.ObjectId,
-    ref: "fs.files",
+    type: String
   },
 });
 
