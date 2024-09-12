@@ -7,6 +7,14 @@ const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
 require("dotenv").config();
 
+const fileFilter = (req, file, cb) => {
+  if(file.mimetype.startsWith("image/jpeg") || file.mimetype.startsWith("image/png")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type, must be PNG or JPEG"))
+  }
+};
+
 const upload = multer({
   storage: multerS3({
     s3: s3,
@@ -18,7 +26,9 @@ const upload = multer({
       const filename = Date.now().toString() + path.extname(file.originalname);
       cb(null, filename);
     },
+    contentType: multerS3.AUTO_CONTENT_TYPE
   }),
+  fileFilter: fileFilter
 });
 
 module.exports = upload;

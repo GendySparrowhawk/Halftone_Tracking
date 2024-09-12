@@ -1,0 +1,15 @@
+<div class="search-bar">
+    <input type="text" id="comic-search" placeholder="Browse Comics">
+
+</div>
+
+<div class="comics-display">
+    {{#each comics}}
+    <div class="comic-card">
+        <img src="{{variants.[0].coverImage}}" alt="no cover found: {{title}}">
+        <h3>{{title}}</h3>
+        <p>Series: {{series.[0].title}}</p>
+        <p>Release Date: {{formatDate releaseDate "DD/MM/YY"}}</p>
+    </div>
+    {{/each}}
+</div>

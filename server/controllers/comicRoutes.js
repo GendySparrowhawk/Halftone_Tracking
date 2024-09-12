@@ -22,7 +22,8 @@ router.get("/", authenticate, async (req, res) => {
       });
     }
 
-    const comics = await Comic.find().lean();
+    const comics = await Comic.find().populate('series').lean();
+    console.log("comics data:", comics[0].series.title)
     res.render("comics", {
       user: user,
       comics: comics,

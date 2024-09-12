@@ -2,6 +2,7 @@ const express = require("express");
 const exphbs = require("express-handlebars");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./controllers/userRoutes");
 const viewRoutes = require("./controllers/viewRoutes");
@@ -19,8 +20,19 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const hbs = exphbs.create({});
+const hbs = exphbs.create({
+  helpers: {
+    formatDate: function (date, format) {
+      return moment(date).format(format);
+    },
+    getCoverImageUrl: function (key) {
+      const baseUrl = "https://halftone-tracking.s3.us-east-2.amazonaws.com/";
+      return baseUrl + key;
+    },
+  },
+});
 app.engine("handlebars", hbs.engine);
+
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "../views"));
 
