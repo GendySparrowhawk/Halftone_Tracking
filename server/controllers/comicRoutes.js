@@ -35,26 +35,31 @@ router.get("/", authenticate, async (req, res) => {
 
 // get a single comics page
 router.get("/:comicId", authenticate, async (req, res) => {
+  console.log("single route attempted")
   try {
     const userId = req.user._id;
     const comicId = req.params.comicId;
 
-    const comic = await Comic.findById(comicId).populate('series').populate('auhtors').populate('artists').lean()
+    const comic = await Comic.findById(comicId)
+      .populate("series")
+      .populate("authors")
+      .populate("artists")
+      .lean();
 
     if (!comic) {
-      return res.status(404).render('404', { message: "comic not found" })
+      return res.status(404).render("404", { message: "comic not found" });
     }
 
-    const customers = await Customer.find ({ userId })
+    const customers = await Customer.find({ userId });
 
-    res.render("single-comic", { comic, customers });
+    return res.render("comic_detail", { comic, customers, user: req.user });
   } catch (err) {
     console.error("error fetching comic", err.message);
-    return res.status(404).render("comics", { message: "comic not found" });
+    return res.status(404).render("profile", { message: "comic not found" });
   }
 });
 
-// create a comic
+// create a comic with all the juicy details
 router.post("/", upload.single("coverImage"), async (req, res) => {
   try {
     const {
@@ -123,7 +128,7 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
     series.comics.push(newComic._id);
     await series.save();
     console.log(`new comic ${title} added to series ${series.title}`);
-    return res.redirect(`comic/${newComic._id}`);
+    return res.redirect(`/comics/${newComic._id}`);
   } catch (err) {
     consol.error("Error adding comi: ", err.message);
     return res
@@ -132,10 +137,11 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
   }
 });
 
+// quick add a comic with less info but easier for in store turn around
 router.post("/quick", upload.single("coverImage"), async (req, res) => {
   console.log("quick add route attempted");
   console.log("Request body:", req.body);
-console.log("File received:", req.file);
+  console.log("File received:", req.file);
   try {
     const { title, issue, releaseDate, seriesTitle, seriesId } = req.body;
     let series;
@@ -148,11 +154,9 @@ console.log("File received:", req.file);
     }
 
     if (!series && !seriesTitle) {
-      return res
-        .status(400)
-        .json({
-          message: "You must attach this comic to a series, even a one shot",
-        });
+      return res.status(400).json({
+        message: "You must attach this comic to a series, even a one shot",
+      });
     }
 
     const newComic = new Comic({

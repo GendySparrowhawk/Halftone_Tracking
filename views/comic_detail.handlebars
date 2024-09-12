@@ -1,8 +1,8 @@
 <div class="comic-details">
     <h1>{{comic.title}}</h1>
-    <p><strong>Issue:</strong> {{comic.issue}}</p>
-    <p><strong>Release Date:</strong> {{#if comic.releaseDate}}{{formatDate comic.releaseDate}}{{else}}N/A{{/if}}</p>
-    <p><strong>Series:</strong> {{#if comic.series.length}}{{comic.series.title}}{{else}}N/A{{/if}}</p>
+    <p># {{comic.issue}}</p>
+    <p>Release Date: {{#if comic.releaseDate}}{{formatDate comic.releaseDate}}{{else}}N/A{{/if}}</p>
+    <p><strong>Series: </strong> {{#if comic.series.length}}{{comic.series.title}}{{else}}N/A{{/if}}</p>
     
     {{#if comic.variants.length}}
       <h2>Variants</h2>
