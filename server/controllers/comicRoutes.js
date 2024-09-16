@@ -12,6 +12,10 @@ const Customer = require("../models/Customer");
 
 // view comics page for a user
 router.get("/", authenticate, async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = 50;
+  const skip = (page -1) * limit;
+  
   try {
     console.log("tried comic route");
     const user = await User.findById(req.user._id).lean();
@@ -21,12 +25,19 @@ router.get("/", authenticate, async (req, res) => {
         errors: ["You must be logged in to view this"],
       });
     }
+    const totalComics = await Comic.countDocuments();
 
-    const comics = await Comic.find().populate('series').lean();
-    console.log("comics data:", comics[0].series.title)
+    const comics = await Comic.find().populate('series').skip(skip).limit(limit).lean();
+    const customers = await Customer.find({ user: req.user._id }).lean()
+    console.log("customers: ", customers)
+    const totalPages = Math.ceil(totalComics / limit)
+    console.log("comics data:")
     res.render("comics", {
       user: user,
       comics: comics,
+      customers: customers,
+      currentPage: page,
+      totalPages
     });
   } catch (err) {
     console.error("Error getting comics", err.message);
@@ -140,9 +151,9 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
 
 // quick add a comic with less info but easier for in store turn around
 router.post("/quick", upload.single("coverImage"), async (req, res) => {
-  console.log("quick add route attempted");
-  console.log("Request body:", req.body);
-  console.log("File received:", req.file);
+  // console.log("quick add route attempted");
+  // console.log("Request body:", req.body);
+  // console.log("File received:", req.file);
   try {
     const { title, issue, releaseDate, seriesTitle, seriesId } = req.body;
     let series;
@@ -186,10 +197,14 @@ router.post("/quick", upload.single("coverImage"), async (req, res) => {
 });
 
 // add a variant
-router.post("/variant", authenticate, upload.single("coverImage"), (req, res)=> {
+router.post("/variant", authenticate, upload.single("coverImage"), async (req, res)=> {
   console.log("add variant route tried")
   try {
-    const comic = Comic.findById()
+    const comicId = req.params.comicId;
+    const { name, coverImage, isIncentive } = req.body;
+
+  } catch (err) {
+    return res.status(500).json({ message: "error adding variant ask jacob to check route"})
   }
 })
 module.exports = router;

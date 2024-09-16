@@ -138,3 +138,80 @@ a:hover {
   box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
   transform: translateY(2px);
 }
+
+.comics-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.comic-card {
+  background-color: #1a394e;
+  border-radius: 8px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  padding: 5px;
+  text-align: center;
+  overflow: hidden;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+  }
+
+  p {
+    font-size: .9rem;
+    color: $font_color;
+  }
+}
+
+.comic-card:hover {
+  transform: scale(1.05);
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+.search-bar {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-bar input {
+  width: 50%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+
+  a {
+    padding: 10px 20px;
+    background-color: #333;
+    color: $font_color;
+    border-radius: 5px;
+    margin: 0 10px;
+    text-decoration: none;
+  }
+
+  span {
+    font-size: 1rem;
+    color: $font_color;
+  }
+}
+
+
