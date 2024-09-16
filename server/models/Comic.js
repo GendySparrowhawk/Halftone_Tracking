@@ -2,6 +2,7 @@ const { model, Schema } = require("mongoose");
 const Author = require("./Author");
 const Artist = require("./Artist");
 const Series = require("./Series");
+const Publisher = require("./Publisher");
 
 const variantSchema = new Schema({
   name: {
@@ -48,6 +49,16 @@ const comicSchema = new Schema({
       ref: "Artist",
     },
   ],
+  publisher: {
+    type: Schema.Types.ObjectId,
+    ref: "Publisher"
+  },
+  FOC: {
+    type: Date,
+  },
+  description: {
+    type: String,
+  }
 });
 
 const Comic = model("Comic", comicSchema);

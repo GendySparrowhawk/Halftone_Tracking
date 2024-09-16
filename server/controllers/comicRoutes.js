@@ -185,4 +185,11 @@ router.post("/quick", upload.single("coverImage"), async (req, res) => {
   }
 });
 
+// add a variant
+router.post("/variant", authenticate, upload.single("coverImage"), (req, res)=> {
+  console.log("add variant route tried")
+  try {
+    const comic = Comic.findById()
+  }
+})
 module.exports = router;
