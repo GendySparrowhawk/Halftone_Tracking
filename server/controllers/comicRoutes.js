@@ -18,6 +18,8 @@ router.get("/", authenticate, async (req, res) => {
   
   try {
     console.log("tried comic route");
+    console.log("Authenticated user:", req.user);
+    console.log("User ID:", req.user._id);
     const user = await User.findById(req.user._id).lean();
 
     if (!user) {
@@ -31,7 +33,7 @@ router.get("/", authenticate, async (req, res) => {
     const customers = await Customer.find({ user: req.user._id }).lean()
     console.log("customers: ", customers)
     const totalPages = Math.ceil(totalComics / limit)
-    console.log("comics data:")
+    // console.log("comics data:")
     res.render("comics", {
       user: user,
       comics: comics,

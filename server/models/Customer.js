@@ -1,6 +1,7 @@
 const { Schema, model } = require("mongoose");
 const Comic = require('./Comic');
 const CustomerComic = require("./CustomerComic");
+const User = require("./User");
 
 const customerSchema = new Schema ({
     firstName: {

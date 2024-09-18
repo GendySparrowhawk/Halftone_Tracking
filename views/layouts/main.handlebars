@@ -32,8 +32,8 @@
         {{/if}}
       </div>
     </div>
-
-    <div id="custFrom" class="modal">
+    {{! customer form quick add }}
+    <div id="custForm" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
         {{#each errors}}
@@ -48,8 +48,8 @@
         </form>
       </div>
     </div>
-
-    <div id="comicFrom" class="modal">
+    {{! comic form quick add }}
+    <div id="comicForm" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
         <form
@@ -61,16 +61,25 @@
           {{#each errors}}
             <p class="error">{{this}}</p>
           {{/each}}
-          <input type="text" name="title" placeholder="Titile" />
+          <input type="text" name="title" placeholder="Title" />
           <input type="number" name="issue" placeholder="Issue #" />
           <input type="date" name="releaseDate" placeholder="Release Date" />
           <input type="text" name="seriesTitle" placeholder="Series" />
-           <input type="hidden" name="seriesId" value="{{seriesId}}" />
+          <input type="hidden" name="seriesId" value="{{seriesId}}" />
           <input type="file" name="coverImage" />
           <button type="submit" class="my-button">Add Comic</button>
         </form>
       </div>
     </div>
+    {{! message modal for user communication }}
+    <div id="messageModal" class="modal">
+      <div class="message-content">
+        <span class="close" id="closeModal">&times;</span>
+        <p></p>
+        <!-- The message will be injected here -->
+      </div>
+    </div>
+
     {{{body}}}
     <div class="footer">
       <a href="https://github.com/GendySparrowhawk">

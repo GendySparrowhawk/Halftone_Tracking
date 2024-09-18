@@ -20,6 +20,18 @@ const customerComicSchema = new Schema({
     enum: ["pulled", "ordered", "arrived", "picked up", "delayed"],
     default: "pulled",
   },
+  statusHistory: [
+    {
+      status: {
+        type: String,
+        enum: ["pulled", "ordered", "arrived", "picked up", "delayed"],
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
   quantity: {
     type: Number,
     default: 1,
