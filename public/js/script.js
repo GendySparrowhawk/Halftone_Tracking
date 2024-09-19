@@ -1,12 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const custForm = document.querySelector("#custFrom");
+  const custForm = document.querySelector("#custForm");
   const comicForm = document.querySelector("#comicForm");
-  const messageModal = document.querySelector("#messageModal");
-  const closeModal = document.querySelector("#closeModal");
   const custBtn = document.querySelector("#addCustBtn");
   const comicBtn = document.querySelector("#addComicBtn");
   const span = document.querySelectorAll(".close");
+  const authorsContainer = document.querySelector("#authors-container");
+  const artistsContainer = document.querySelector("#artists-container");
 
+  // Show forms when buttons are clicked
   custBtn.onclick = function () {
     custForm.style.display = "block";
   };
@@ -15,66 +16,73 @@ document.addEventListener("DOMContentLoaded", function () {
     comicForm.style.display = "block";
   };
 
-  span.forEach(function (clsoeBtn, index) {
-    clsoeBtn.onclick = function () {
+  // Hide forms when close button or outside form is clicked
+  span.forEach(function (closeBtn, index) {
+    closeBtn.onclick = function () {
       if (index === 0) custForm.style.display = "none";
       if (index === 1) comicForm.style.display = "none";
-      if (index === 2 && messageModal) messageModal.style.display = "none";
     };
   });
 
   window.onclick = function (e) {
     if (e.target === custForm) custForm.style.display = "none";
     if (e.target === comicForm) comicForm.style.display = "none";
-    if (e.target === messageModal) messageModal.style.display = "none";
   };
 
-  // Handle AJAX submission for quick-add form (comic pulling)
-  document.querySelectorAll(".quick-add-form").forEach((form) => {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault(); // Prevent the form from submitting the traditional way
+  // Add new author
+  document.querySelector("#addAuthor").addEventListener("click", function () {
+    const firstName = document.querySelector("#newAuthorFirstName").value;
+    const lastName = document.querySelector("#newAuthorLastName").value;
 
-      const comicId = this.querySelector('input[name="comicId"]').value;
-      const customerId = this.querySelector('select[name="customerId"]').value;
+    if (firstName && lastName) {
+      const newAuthorDiv = document.createElement("div");
+      newAuthorDiv.classList.add("author-container");
 
-      fetch("/pull/quick-add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          comicId: comicId,
-          customerId: customerId,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          showMessageModal(data.message, data.messageType);
-        })
-        .catch((err) => {
-          console.error("Error:", err);
-          showMessageModal(
-            "An error occurred while processing your request.",
-            "error"
-          );
-        });
-    });
+      newAuthorDiv.innerHTML = `
+        <input type="hidden" name="newAuthors" value="${firstName}, ${lastName}" />
+        <span>${firstName} ${lastName}</span>
+        <button type="button" class="remove-author">Remove</button>
+      `;
+      authorsContainer.appendChild(newAuthorDiv);
+
+      // Clear input fields
+      document.querySelector("#newAuthorFirstName").value = '';
+      document.querySelector("#newAuthorLastName").value = '';
+    }
   });
 
-  // Function to show message modal
-  function showMessageModal(message, messageType) {
-    const messageContent = document.querySelector(
-      "#messageModal .message-content p"
-    );
+  // Add new artist
+  document.querySelector("#addArtist").addEventListener("click", function () {
+    const firstName = document.querySelector("#newArtistFirstName").value;
+    const lastName = document.querySelector("#newArtistLastName").value;
 
-    // Set the message and message type
-    messageContent.innerHTML = message;
-    messageModal.style.display = "block"; // Show the modal
-    messageModal.classList.add(messageType);
-  }
+    if (firstName && lastName) {
+      const newArtistDiv = document.createElement("div");
+      newArtistDiv.classList.add("artist-container");
 
-  // Manually close message modal
-  closeModal.onclick = function () {
-    messageModal.style.display = "none";
-  };
+      newArtistDiv.innerHTML = `
+        <input type="hidden" name="newArtists" value="${firstName}, ${lastName}" />
+        <span>${firstName} ${lastName}</span>
+        <button type="button" class="remove-artist">Remove</button>
+      `;
+      artistsContainer.appendChild(newArtistDiv);
+
+      // Clear input fields
+      document.querySelector("#newArtistFirstName").value = '';
+      document.querySelector("#newArtistLastName").value = '';
+    }
+  });
+
+  // Remove author or artist
+  authorsContainer.addEventListener("click", function (event) {
+    if (event.target.classList.contains("remove-author")) {
+      event.target.parentElement.remove();
+    }
+  });
+
+  artistsContainer.addEventListener("click", function (event) {
+    if (event.target.classList.contains("remove-artist")) {
+      event.target.parentElement.remove();
+    }
+  });
 });

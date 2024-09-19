@@ -38,6 +38,15 @@ const hbs = exphbs.create({
     },
     json: function (context) {
       return JSON.stringify(context, null, 2);
+    },
+    eq: function (a, b) {
+      return a === b;
+    },
+    ifEquals: function (a, b, options) {
+      if (a === b) {
+        return options.fn(this);
+      }
+      return options.inverse(this);
     }
   },
 });

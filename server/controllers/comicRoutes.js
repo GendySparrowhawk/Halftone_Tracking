@@ -7,8 +7,10 @@ const User = require("../models/User");
 const Series = require("../models/Series");
 const Artist = require("../models/Artist");
 const Author = require("../models/Author");
+const Publisher = require("../models/Publisher");
 const gfs = require("../config/connection");
 const Customer = require("../models/Customer");
+const CustomerComic = require("../models/CustomerComic");
 
 // view comics page for a user
 router.get("/", authenticate, async (req, res) => {
@@ -58,15 +60,20 @@ router.get("/:comicId", authenticate, async (req, res) => {
       .populate("series")
       .populate("authors")
       .populate("artists")
+      .populate("publisher")
       .lean();
 
     if (!comic) {
       return res.status(404).render("404", { message: "comic not found" });
     }
 
-    const customers = await Customer.find({ userId });
+    const authorsList = await Author.find().lean();
+    const artistList = await Artist.find().lean();
+    const seriesList = await Series.find().lean();
+    const customerComics = await CustomerComic.find({ comic: comicId }).populate("customer").lean();
+    const customers = customerComics.map(cc => cc.customer);
 
-    return res.render("comic_detail", { comic, customers, user: req.user });
+    return res.render("comic_detail", { comic, customers, user: req.user, seriesList, authorsList, artistList });
   } catch (err) {
     console.error("error fetching comic", err.message);
     return res.status(404).render("profile", { message: "comic not found" });
@@ -207,6 +214,70 @@ router.post("/variant", authenticate, upload.single("coverImage"), async (req, r
 
   } catch (err) {
     return res.status(500).json({ message: "error adding variant ask jacob to check route"})
+  }
+})
+
+// edit a comic 
+router.post("/:id/edit", authenticate, async (req, res) => {
+  console.log("edit comic attepmted")
+  try {
+    const comicId = req.params.id;
+    const { title, issue, releaseDate, foc, description, series, newSeries, authors, newAuthors, artists, newArtists } = req.body;
+    console.log(req.body)
+
+    const comic = await Comic.findById(comicId);
+
+    if(!comic) {
+      return res.status(404).send("comic not found")
+    }
+
+    if (title) comic.title = title;
+    if (issue) comic.issue = issue;
+    if (releaseDate) comic.releaseDate = new Date(releaseDate);
+    if (foc) comic.FOC = new Date(foc);
+    if (description) comic.description = description;
+
+    if (newSeries) {
+      const newSeriesDoc = await Series.create({ name: newSeries });
+      comic.series = newSeriesDoc._id;
+    } else if (series) {
+      comic.series = series
+    }
+
+    const authorIds = [];
+    if(newAuthors) {
+      for (const author of newAuthor) {
+        const [firstName, lastName] = author.split(', ');
+        const newAuthor = await Author.create({ firstName, lastName })
+        authorIds.push(newAuthor._id);
+        console.log("new author added")
+      }
+    }
+    if(authors) {
+      authorsIds.push(...authors);
+    }
+    comic.authors = authorIds;
+
+    const artistIds = [];
+    if(newArtists) {
+      for (const artist of newArtists) {
+        const [firstName, lastName] = artist.split(', ')
+        const newArtist = await Artist.create({ firstName, lastName })
+        artistIds.push(newArtist._id)
+        console.log("new artist added")
+      }
+    }
+    if (artists) {
+      artistIds.push(...artists);
+    }
+    comic.artists = artistIds;
+
+    await comic.save();
+
+    res.redirect(`/comics/${comicId}`);
+  }catch (err) {
+    console.error("Error updating comic:", err);
+    res.status(500).send("Error updating comic");
   }
 })
 module.exports = router;

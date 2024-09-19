@@ -16,6 +16,10 @@ const variantSchema = new Schema({
   coverImage: {
     type: String
   },
+  artist: {
+    type: Schema.Types.ObjectId,
+    ref: "Artist"
+  }
 });
 
 const comicSchema = new Schema({
