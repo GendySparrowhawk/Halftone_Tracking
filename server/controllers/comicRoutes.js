@@ -20,8 +20,8 @@ router.get("/", authenticate, async (req, res) => {
   
   try {
     console.log("tried comic route");
-    console.log("Authenticated user:", req.user);
-    console.log("User ID:", req.user._id);
+    // console.log("Authenticated user:", req.user);
+    // console.log("User ID:", req.user._id);
     const user = await User.findById(req.user._id).lean();
 
     if (!user) {
@@ -108,10 +108,9 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
 
     const authorIds = await Promise.all(
       authors.map(async (author) => {
-        const [firstName, lastName] = author.split(" ");
-        let foundAuthor = await Author.findOne({ firstName, lastName });
+        let foundAuthor = await Author.findOne({ aName });
         if (!foundAuthor) {
-          foundAuthor = new Author({ firstName, lastName });
+          foundAuthor = new Author({  aName });
           await foundAuthor.save();
         }
         return foundAuthor._id;
@@ -120,10 +119,9 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
 
     const artistIds = await Promise.all(
       artists.map(async (artist) => {
-        const [firstName, lastName] = artist.split(" ");
-        let foundArtist = await Artist.findOne({ firstName, lastName });
+        let foundArtist = await Artist.findOne({ aName });
         if (!foundArtist) {
-          foundArtist = new Artist({ firstName, lastName });
+          foundArtist = new Artist({ aName });
           await foundArtist.save();
         }
         return foundArtist._id;
@@ -206,7 +204,7 @@ router.post("/quick", upload.single("coverImage"), async (req, res) => {
 });
 
 // add a variant
-router.post("/variant", authenticate, upload.single("coverImage"), async (req, res)=> {
+router.post("/:id/variant", authenticate, upload.single("coverImage"), async (req, res)=> {
   console.log("add variant route tried")
   try {
     const comicId = req.params.comicId;
@@ -226,43 +224,42 @@ router.post("/:id/edit", authenticate, async (req, res) => {
     console.log(req.body)
 
     const comic = await Comic.findById(comicId);
-
+    
     if(!comic) {
       return res.status(404).send("comic not found")
     }
-
-    if (title) comic.title = title;
-    if (issue) comic.issue = issue;
-    if (releaseDate) comic.releaseDate = new Date(releaseDate);
-    if (foc) comic.FOC = new Date(foc);
-    if (description) comic.description = description;
+    const updates = {};
+    
+    if (title) updates.title = title;
+    if (issue) updates.issue = issue;
+    if (releaseDate) updates.releaseDate = new Date(releaseDate);
+    if (foc) updates.FOC = new Date(foc);
+    if (description) updates.description = description;
 
     if (newSeries) {
       const newSeriesDoc = await Series.create({ name: newSeries });
-      comic.series = newSeriesDoc._id;
+      updates.series = newSeriesDoc._id;
     } else if (series) {
-      comic.series = series
+      updates.series = series
     }
 
     const authorIds = [];
     if(newAuthors) {
-      for (const author of newAuthor) {
-        const [firstName, lastName] = author.split(', ');
-        const newAuthor = await Author.create({ firstName, lastName })
+      for (const authorName of newAuthor) {
+        const newAuthor = await Author.create({ aName: authorName })
         authorIds.push(newAuthor._id);
         console.log("new author added")
       }
     }
     if(authors) {
-      authorsIds.push(...authors);
+      authorIds.push(...authors);
     }
-    comic.authors = authorIds;
+    updates.authors = authorIds;
 
     const artistIds = [];
     if(newArtists) {
-      for (const artist of newArtists) {
-        const [firstName, lastName] = artist.split(', ')
-        const newArtist = await Artist.create({ firstName, lastName })
+      for (const artistName of newArtists) {
+        const newArtist = await Artist.create({ aName: artistName })
         artistIds.push(newArtist._id)
         console.log("new artist added")
       }
@@ -270,9 +267,12 @@ router.post("/:id/edit", authenticate, async (req, res) => {
     if (artists) {
       artistIds.push(...artists);
     }
-    comic.artists = artistIds;
+    updates.artists = artistIds;
+    const updatedComic = await Comic.findByIdAndUpdate(comicId, { $set: updates }, { new: true });
 
-    await comic.save();
+    if(!updatedComic) {
+      return res.status(404).send("error updating comic, tell jacob")
+    }
 
     res.redirect(`/comics/${comicId}`);
   }catch (err) {

@@ -1,11 +1,7 @@
 const { model, Schema } = require("mongoose");
 
 const artistSchema = new Schema({
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
+  aName: {
     type: String,
     required: true,
   },

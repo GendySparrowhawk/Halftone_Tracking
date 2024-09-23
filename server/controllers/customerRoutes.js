@@ -8,43 +8,18 @@ const { start } = require("repl");
 // get customers page
 router.get("/", authenticate, async (req, res) => {
   try {
-    const customers = await Customer.find({ _id: { $in: req.user.customers } })
-      .populate({
-        path: "comics",
-        model: "CustomerComic",
-        populate: {
-          path: "comic",
-          model: "Comic",
-          populate: {
-            path: "variants.coverImage",
-            model: "fs.files",
-          },
-        },
-      })
-      .lean();
+    const user = await User.findById(req.user._id)
+    const customers = await Customer.find()
+      .populate('comics').lean()
 
     const startOfWeek = new Date();
     startOfWeek.setHours(0, 0, 0, 0);
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(endOfWeek.getDate() + 7);
-
-    customers.forEach((customer) => {
-      customer.comics = customer.comics.map((custComic) => ({
-        ...custComic,
-        comic: {
-          ...custComic.comic,
-          variants: custComic.comic.variants.map((variant) => ({
-            ...variant,
-            coverImage: variant.coverImage ? { ...variant.coverImage } : null,
-          })),
-        },
-      }));
-    });
-
+ 
     res.render("customers", {
-      user: JSON.parse(JSON.stringify(req.user)),
-      customers: JSON.parse(JSON.stringify(customers)),
-      errors: [],
+      user: user,
+      customers: customers
     });
   } catch (err) {
     console.error("error fetching customers", err.message);

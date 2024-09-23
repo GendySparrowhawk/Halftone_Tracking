@@ -102,10 +102,10 @@
     {{#each comic.artists}}
       <div class="artist-container">
         <select name="artists">
-          <option value="{{this._id}}" selected>{{this.firstName}} {{this.lastName}}</option>
+          <option value="{{this._id}}" selected>{{this.aName}}</option>
           {{#each artistsList}}
             <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
-              {{this.firstName}} {{this.lastName}}
+              {{this.aName}}
             </option>
           {{/each}}
         </select>
