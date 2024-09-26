@@ -5,6 +5,7 @@ const User = require("../models/User");
 const Customer = require("../models/Customer");
 const CustomerComic = require("../models/CustomerComic");
 const { start } = require("repl");
+
 // get customers page
 router.get("/", authenticate, async (req, res) => {
   try {
@@ -62,16 +63,30 @@ router.post("/", authenticate, async (req, res) => {
   const { firstName, lastName, email, phoneNumber } = req.body;
 
   try {
+    const existingCustomer = await Customer.findOne({
+      firstName,
+      lastName,
+      user: req.user._id
+    })
+
+    if(existingCustomer) {
+      console.log(`Customer ${firstName} ${lastName} already exists for user ${req.user.userName}`);
+      return res.render("customers", {
+        user: req.user,
+        customers: req.user.customers,
+        errors: [`Customer ${firstName} ${lastName} already exists.`],
+      });
+    }
     const newCustomer = new Customer({
       firstName,
       lastName,
       email,
       phoneNumber,
     });
+    await newCustomer.save();
     console.log(
       `new cusotmer ${newCustomer.firstName} ${newCustomer.lastName} added`
     );
-    await newCustomer.save();
     await User.findByIdAndUpdate(req.user._id, {
       $push: { customers: newCustomer._id },
     });
@@ -103,7 +118,12 @@ router.post("/quick", authenticate, async (req, res) => {
         customer.firstName === firstName && customer.lastName === lastName
     );
     if (existingCustomer) {
-      return res.json({ message: "This customer already exists" });
+      console.log(`Customer ${firstName} ${lastName} already exists for user ${req.user.userName}`);
+      return res.render("customers", {
+        user: req.user,
+        customers: req.user.customers,
+        errors: [`Customer ${firstName} ${lastName} already exists.`],
+      });
     }
     const newCustomer = await Customer({
       firstName,

@@ -4,34 +4,39 @@
 
 <div class="comics-display">
   {{#each comics}}
-    <div class="comic-card">
-      <a href="/comics/{{_id}}">
-        <img src="{{variants.0.coverImage}}" alt="no cover found: {{title}}" />
-        <h3>{{title}} #{{issue}}</h3>
-        <p>Release Date: {{formatDate releaseDate "DD/MM/YY"}}</p>
-      </a>
-      <form action="/pull/quick-add" method="POST">
-        <input type="hidden" name="comicId" value="{{_id}}" />
-        <label for="customer">Pull for Customer: </label>
-        <select name="customerId" id="customer">
-          {{#each ../customers}}
-            <option value="{{_id}}">{{firstName}} {{lastName}}</option>
-          {{/each}}
-        </select>   
-        <button class="my-button">Add to Pull List</button>
-      </form>
-    </div>
+  <div class="comic-card">
+    <a href="/comics/{{_id}}">
+      <img src="{{variants.0.coverImage}}" alt="no cover found: {{title}}" />
+      <h3>{{title}} #{{issue}}</h3>
+      <p>Release Date: {{formatDate releaseDate "DD/MM/YY"}}</p>
+    </a>
+    <form action="/pull/quick-add" method="POST">
+      <input type="hidden" name="comicId" value="{{_id}}" />
+      <label for="customer">Pull for Customer: </label>
+      <select name="customerId" id="customer">
+        {{#each ../customers}}
+        <option value="{{_id}}">{{firstName}} {{lastName}}</option>
+        {{/each}}
+      </select>
+      {{#if message}}
+      <div class="{{#if (eq messageType 'success')}} alert-success {{else}} alert-error {{/if}}">
+        {{message}}
+      </div>
+      {{/if}}
+      <button class="my-button">Add to Pull List</button>
+    </form>
+  </div>
   {{/each}}
 </div>
 
 <div class="pagination">
   {{#if (gt currentPage 1)}}
-    <a href="?page={{minus currentPage 1}}">Previous</a>
+  <a href="?page={{minus currentPage 1}}">Previous</a>
   {{/if}}
 
   <span>Page {{currentPage}} of {{totalPages}}</span>
 
   {{#if (lt currentPage totalPages)}}
-    <a href="?page={{plus currentPage 1}}">Next</a>
+  <a href="?page={{plus currentPage 1}}">Next</a>
   {{/if}}
 </div>

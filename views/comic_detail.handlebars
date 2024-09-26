@@ -74,34 +74,32 @@
     <label for="newSeries">New Series</label>
     <input type="text" id="newSeries" name="newSeries" placeholder="New Series">
 
-   {{!-- author edits --}}
-   <h3>Edit Writers</h3>
-   <div id="author-container">
-    {{#each comic.authors}}
-    <div class="author-container">
-      <select name="authors">
-        <option value="{{this._id}}" selected> {{this.firstName}} {{this.lastName}}</option>
-        {{#each authorsList}}
-         <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
-              {{this.firstName}} {{this.lastName}}
-            </option>
-            {{/each}}
-      </select>
-      <button type="button" class="remove-author" data-id="{{this.id}}">Remove</button>
+    {{!-- author edits --}}
+    <h3>Edit Writers</h3>
+    <div id="author-container">
+      {{#each comic.authors}}
+      <div class="author-container">
+        <select name="authors[]">
+          <option value="{{this._id}}" selected> {{this.aName}}</option>
+          {{#each authorsList}}
+          <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
+            {{this.aName}}
+          </option>
+          {{/each}}
+        </select>
+        <button type="button" class="remove-author" data-id="{{this.id}}">Remove</button>
+      </div>
+      {{/each}}
     </div>
-    {{/each}}
-   </div>
-  <label for="newAuthorFirstName">Author First Name:</label>
-  <input type="text" id="newAuthorFirstName" name="newAuthorFirstName" placeholder="eg: Deb">
-   <label for="newAuthorLastName">Author Last Name:</label>
-  <input type="text" id="newAuthorLastName" name="newAuthorLastName" placeholder="Enter new author's last name" />
-  <button type="button" id="addAuthor">Add New Author</button>
+    <label for="newAuthor">New Author:</label>
+    <input type="text" id="newAuthor" name="newAuthors" placeholder="New Author">
+    <button type="button" id="addAuthor">Add New Author</button>
 
   <h2>Artists</h2>
-  <div id="artists-container">
-    {{#each comic.artists}}
+    <div id="artists-container">
+      {{#each comic.artists}}
       <div class="artist-container">
-        <select name="artists">
+        <select name="artists[]">
           <option value="{{this._id}}" selected>{{this.aName}}</option>
           {{#each artistsList}}
             <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
@@ -111,14 +109,13 @@
         </select>
         <button type="button" class="remove-artist" data-id="{{this._id}}">Remove</button>
       </div>
-    {{/each}}
-  </div>
-  <label for="newArtistFirstName">Artist First Name:</label>
-  <input type="text" id="newArtistFirstName" name="newArtistFirstName" placeholder="Enter new artist's first name" />
-  <label for="newArtistLastName">Artist Last Name:</label>
-  <input type="text" id="newArtistLastName" name="newArtistLastName" placeholder="Enter new artist's last name" />
-  <button type="button" id="addArtist">Add New Artist</button>
+      {{/each}}
+    </div>
+    
+    <label for="newArtist">New Artist Name:</label>
+    <input type="text" id="newArtist" name="newArtists" placeholder="Enter new artist's name" />
+    <button type="button" id="addArtist">Add New Artist</button>
 
-  <button type="submit">Save Changes</button>
+    <button type="submit">Save Changes</button>
   </form>
 </div>

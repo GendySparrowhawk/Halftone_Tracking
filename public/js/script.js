@@ -6,6 +6,20 @@ document.addEventListener("DOMContentLoaded", function () {
   const span = document.querySelectorAll(".close");
   const authorsContainer = document.querySelector("#authors-container");
   const artistsContainer = document.querySelector("#artists-container");
+  const urlParams = new URLSearchParams(window.location.search);
+  const message = urlParams.get("message");
+  const messageType = urlParams.get("messageType");
+
+  if (message) {
+    alert(`${messageType.toUpperCase()}: ${decodeURIComponent(message)}`);
+  }
+
+  setTimeout(() => {
+    const url = new URL(window.location);
+    url.searchParams.delete("message");
+    url.searchParams.delete("messageType");
+    window.history.replaceState({}, document.title, url);
+  }, 1000);
 
   // Show forms when buttons are clicked
   custBtn.onclick = function () {
@@ -31,45 +45,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add new author
   document.querySelector("#addAuthor").addEventListener("click", function () {
-    const firstName = document.querySelector("#newAuthorFirstName").value;
-    const lastName = document.querySelector("#newAuthorLastName").value;
-
-    if (firstName && lastName) {
+    const authorName = document.querySelector("#newAuthorName").value.trim();
+    if (authorName) {
       const newAuthorDiv = document.createElement("div");
       newAuthorDiv.classList.add("author-container");
-
       newAuthorDiv.innerHTML = `
-        <input type="hidden" name="newAuthors" value="${firstName}, ${lastName}" />
-        <span>${firstName} ${lastName}</span>
-        <button type="button" class="remove-author">Remove</button>
-      `;
+  <input type="hidden" name="newAuthors" value="${authorName}" />
+  <span>${authorName}</span>
+  <button type="button" class="remove-author">Remove</button>
+`;
       authorsContainer.appendChild(newAuthorDiv);
-
-      // Clear input fields
-      document.querySelector("#newAuthorFirstName").value = '';
-      document.querySelector("#newAuthorLastName").value = '';
+      document.querySelector("#newAuthorName").value = "";
     }
   });
 
   // Add new artist
   document.querySelector("#addArtist").addEventListener("click", function () {
-    const firstName = document.querySelector("#newArtistFirstName").value;
-    const lastName = document.querySelector("#newArtistLastName").value;
+    const artistName = document.querySelector("#newArtistName").value.trim(); // Single input for name
 
-    if (firstName && lastName) {
+    if (artistName) {
       const newArtistDiv = document.createElement("div");
       newArtistDiv.classList.add("artist-container");
 
       newArtistDiv.innerHTML = `
-        <input type="hidden" name="newArtists" value="${firstName}, ${lastName}" />
-        <span>${firstName} ${lastName}</span>
+        <input type="hidden" name="newArtists" value="${artistName}" />
+        <span>${artistName}</span>
         <button type="button" class="remove-artist">Remove</button>
       `;
       artistsContainer.appendChild(newArtistDiv);
 
-      // Clear input fields
-      document.querySelector("#newArtistFirstName").value = '';
-      document.querySelector("#newArtistLastName").value = '';
+      // Clear input field
+      document.querySelector("#newArtistName").value = "";
     }
   });
 
