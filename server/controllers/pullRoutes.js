@@ -11,6 +11,27 @@ const Artist = require("../models/Artist");
 const Author = require("../models/Author");
 const { error } = require("console");
 
+// main add to customer route
+router.post("/", authenticate, async (req, res) => {
+  console.log("pull route attemped")
+  const { comicId, customerId, variantId } = req.body;
+
+  try {
+    const comic = await Comic.findById(comicId)
+    const customer = await Customer.findById(customerId)
+
+    if (!comic) {
+      return res.redirect(`${req.headers.referer}?message=No+comic+detected&messageType=error`);
+    }
+    if(!customer) {
+      return res.redirect(`${req.headers.referer}?message=No+customer+detected&messageType=error`);
+    }
+
+  } catch (err) {
+    console.error("Error adding to cust", err);
+    return res.redirect(`${req.headers.referer}?message=Error+occurred+tell+Jacob+to+check+route&messageType=error`);
+  }
+})
 router.post("/quick-add", authenticate, async (req, res) => {
   console.log("quick add to cust attempted");
   const { comicId, customerId, variantId } = req.body;

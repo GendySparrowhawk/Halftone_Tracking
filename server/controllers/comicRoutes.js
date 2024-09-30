@@ -296,9 +296,9 @@ router.post("/:id/edit", upload.none(), authenticate, async (req, res) => {
     }
 
     const artistIds = [];
-    if (newArtists && Array.isArray(newArtists)) { // Ensure it's an array
+    if (newArtists && Array.isArray(newArtists)) {
       for (const artistName of newArtists) {
-        if (artistName.trim() !== "") { // Only create if not empty
+        if (artistName.trim() !== "") {
           const newArtist = await Artist.create({ aName: artistName });
           artistIds.push(newArtist._id);
           console.log("new artist added");

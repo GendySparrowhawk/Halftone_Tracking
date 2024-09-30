@@ -36,6 +36,12 @@ const userSchema = new Schema(
         ref: 'Customer',
       },
     ],
+    links: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Link'
+      }
+    ]
   },
   {
     timestamps: true,
