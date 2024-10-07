@@ -9,6 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
   const message = urlParams.get("message");
   const messageType = urlParams.get("messageType");
+  const editComicModal = document.querySelector("#editComicForm");
+  const addNextSeriesModal = document.querySelector("#nextSeriesForm");
+  const editComicBtn = document.querySelector("#editComicBtn");
+  const addNextSeriesBtn = document.querySelector("#addNextSeriesBtn");
 
   if (message) {
     alert(`${messageType.toUpperCase()}: ${decodeURIComponent(message)}`);
@@ -38,44 +42,58 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   });
 
+  // edit comic modal
+  editComicBtn.onclick = function () {
+    console.log("clicked");
+    editComicModal.style.display = "block";
+  };
+
+  addNextSeriesBtn.onclick = function () {
+    console.log("clicked");
+    addNextSeriesModal.style.display = "block";
+  };
+
   window.onclick = function (e) {
     if (e.target === custForm) custForm.style.display = "none";
     if (e.target === comicForm) comicForm.style.display = "none";
+    if (e.target === editComicModal) editComicModal.style.display = "none";
+    if (e.target === addNextSeriesModal)
+      addNextSeriesModal.style.display = "none";
   };
 
   // Add new author
   document.querySelector("#addAuthor").addEventListener("click", function () {
-    const authorName = document.querySelector("#newAuthorName").value.trim();
+    const authorName = document.querySelector("#newAuthor").value.trim();
     if (authorName) {
       const newAuthorDiv = document.createElement("div");
       newAuthorDiv.classList.add("author-container");
       newAuthorDiv.innerHTML = `
-  <input type="hidden" name="newAuthors" value="${authorName}" />
+  <input type="hidden" name="newAuthors[]" value="${authorName}" />
   <span>${authorName}</span>
   <button type="button" class="remove-author">Remove</button>
 `;
       authorsContainer.appendChild(newAuthorDiv);
-      document.querySelector("#newAuthorName").value = "";
+      document.querySelector("#newAuthor").value = "";
     }
   });
 
   // Add new artist
   document.querySelector("#addArtist").addEventListener("click", function () {
-    const artistName = document.querySelector("#newArtistName").value.trim(); // Single input for name
+    const artistName = document.querySelector("#newArtist").value.trim();
 
     if (artistName) {
       const newArtistDiv = document.createElement("div");
       newArtistDiv.classList.add("artist-container");
 
       newArtistDiv.innerHTML = `
-        <input type="hidden" name="newArtists" value="${artistName}" />
+        <input type="hidden" name="newArtists[]" value="${artistName}" />
         <span>${artistName}</span>
         <button type="button" class="remove-artist">Remove</button>
       `;
       artistsContainer.appendChild(newArtistDiv);
 
       // Clear input field
-      document.querySelector("#newArtistName").value = "";
+      document.querySelector("#newArtist").value = "";
     }
   });
 

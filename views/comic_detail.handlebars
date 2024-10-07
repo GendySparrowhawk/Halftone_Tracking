@@ -1,121 +1,166 @@
 <div class="comic-main">
-  {{#each comic.variants}}
-  {{#if (eq this.name "A cover")}}
   <div class="cover-image">
-    {{#if this.coverImage}}
-    <img src="{{this.coverImage}}" alt="{{this.name}} Cover" />
+    {{#if comic.variants.[0].coverImage}}
+      <img src="{{comic.variants.[0].coverImage}}" alt="Cover Image" />
     {{else}}
-    <p>No cover image available.</p>
+      <p>No cover image available.</p>
     {{/if}}
-    {{/if}}
-    {{/each}}
+  </div>
     <div class="comic-details">
       <h1>{{comic.title}} #{{comic.issue}}</h1>
       <h2>release date: {{formatDate comic.releaseDate "MM/DD/YYYY"}}</h2>
       <h2>FOC: {{formatDate coimc.FOC "MM/DD/YYYY"}}</h2>
       <p>{{comic.description}}</p>
-    </div>
-    <div class="comic-pulls">
-      <h2>Customers pulling this comic</h2>
-      {{#if customers.length}}
-      <ul>
-        {{#each customers}}
-        <li>{{this.firstName}} {{this.lastName}}</li>
+      <div class="creators">
+        {{#each comic.authors}}
+        <p>Writers</p>
+        <li>{{this.aName}}</li>
+        {{else}}
+        <li>No Writers found</li>
         {{/each}}
-      </ul>
+      </div>
+      <div class="creators"></div>
+      <p>Artists</p>
+      {{#each comic.artists}}
+      <li>{{this.aName}}</li>
       {{else}}
-      <p>no customers have pulled this yet</p>
-      {{/if}}
+      <li>No Artists found</li>
+      {{/each}}
     </div>
   </div>
+  <div class="comic-pulls">
+    <h2>Customers pulling this comic</h2>
+    {{#if customers.length}}
+    <ul>
+      {{#each customers}}
+      <li>{{this.firstName}} {{this.lastName}}</li>
+      {{/each}}
+    </ul>
+    {{else}}
+    <p>no customers have pulled this yet</p>
+    {{/if}}
+  </div>
+  <button id="editComicBtn" class="my-button">Edit Comic</button>
+  <button id="addNextSeriesBtn" class="my-button">Add the next coimc in series</button>
+
+</div>
 </div>
 
 {{!-- manage variants --}}
-<div class="variant form">
+<div class="variant-form modal">
   <h2>Add a Variant Cover</h2>
-  <form class="variant-form" action="/comics/variant" method="POST" enctype="multipart/form-data">
+  <form class="variant-form" action="/comics/{{comic._id}}/variant" method="POST" enctype="multipart/form-data">
     {{#each errors}}
     <p class="error">{{this}}</p>
     {{/each}}
+    <label for="name">Variant Name:</label>
     <input type="text" name="name" placeholder="name: eg:Jim Lee Cardstock 1:25" />
-    <input type="file" name="coverImage" />
+    <label for="isIncentive">Is Incentive?</label>
     <input type="checkbox" name="isIncentive" placeholder="Incentive Cover" />
+    <label for="coverImage">Cover Image</label>
+    <input type="file" name="coverImage" id="coverImage" accept="image/*" required />
+
+    <label for="artist"></label>
+    <select name="artist" id="artist">
+      <option value="">Select Artist</option>
+      {{#each artistsList}}
+      <option value="{{this._id}}">{{this.aName}}</option>
+      {{/each}}
+    </select>
     <button calss="my-button">Create Variant</button>
   </form>
 </div>
-
+{{!-- add next in series form --}}
+<div id="nextSeriesForm" class="modal">
+  <div class="next-form-content">
+    <span class="close">&times;</span>
+    <h2>Add Next in Series</h2>
+    <form action="/comics/{{comic._id}}/next" method="POST" enctype="multipart/form-data">
+      <label for="releaseDate">Release Date:</label>
+      <input type="date" id="releaseDate" name="releaseDate">
+      <label for="foc">FOC Date:</label>
+      <input type="date" id="foc" name="foc" value="{{formatDate comic.FOC 'YYYY-MM-DD'}}" />
+      <label for="coverImage">A Cover</label>
+      <input type="file" name="coverImage" id="coverImage" accept="image/*" required />
+      <button type="submit" class="my-button">Add</button>
+    </form>
+  </div>
+</div>
 {{!-- edit comic details --}}
-<div class="add-details">
-  <h1>Edit Coimc Entry</h1>
-  <form class="add-details-form" action="/comics/{{comic._id}}/edit" method="POST" enctype="multipart/form-data">
-    <label for="title">Title:</label>
-    <input type="text" id="title" name="title" value="{{comic.title}}" required />
+<div class="add-details modal" id="editComicForm">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Edit Comic</h2>
+    <form class="add-details-form" action="/comics/{{comic._id}}/edit" method="POST" enctype="multipart/form-data">
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title" value="{{comic.title}}" required />
 
-    <label for="issue">Issue:</label>
-    <input type="number" id="issue" name="issue" value="{{comic.issue}}" required />
+      <label for="issue">Issue:</label>
+      <input type="number" id="issue" name="issue" value="{{comic.issue}}" required />
 
-    <label for="releaseDate">Release Date:</label>
-    <input type="date" id="releaseDate" name="releaseDate" value="{{formatDate comic.releaseDate 'YYYY-MM-DD'}}" />
+      <label for="releaseDate">Release Date:</label>
+      <input type="date" id="releaseDate" name="releaseDate" value="{{formatDate comic.releaseDate 'YYYY-MM-DD'}}" />
 
-    <label for="foc">FOC Date:</label>
-    <input type="date" id="foc" name="foc" value="{{formatDate comic.FOC 'YYYY-MM-DD'}}" />
+      <label for="foc">FOC Date:</label>
+      <input type="date" id="foc" name="foc" value="{{formatDate comic.FOC 'YYYY-MM-DD'}}" />
 
-    <label for="description">Description:</label>
-    <textarea id="description" name="description">{{comic.description}}</textarea>
+      <label for="description">Description:</label>
+      <textarea id="description" name="description">{{comic.description}}</textarea>
 
-    <label for="series">Series:</label>
-    <select id="series" name="series">
-      {{#each seriesList}}
-      <option value="{{this._id}}" {{#ifEquals this._id ../comic.series._id}}selected{{/ifEquals}}>
-        {{this.title}}
-      </option>
-      {{/each}}
-    </select>
-    <label for="newSeries">New Series</label>
-    <input type="text" id="newSeries" name="newSeries" placeholder="New Series">
+      <label for="series">Series:</label>
+      <select id="series" name="series">
+        {{#each seriesList}}
+        <option value="{{this._id}}" {{#ifEquals this._id ../comic.series._id}}selected{{/ifEquals}}>
+          {{this.title}}
+        </option>
+        {{/each}}
+      </select>
+      <label for="newSeries">New Series</label>
+      <input type="text" id="newSeries" name="newSeries" placeholder="New Series">
 
-    {{!-- author edits --}}
-    <h3>Edit Writers</h3>
-    <div id="author-container">
-      {{#each comic.authors}}
-      <div class="author-container">
-        <select name="authors[]">
-          <option value="{{this._id}}" selected> {{this.aName}}</option>
-          {{#each authorsList}}
-          <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
-            {{this.aName}}
-          </option>
-          {{/each}}
-        </select>
-        <button type="button" class="remove-author" data-id="{{this.id}}">Remove</button>
-      </div>
-      {{/each}}
-    </div>
-    <label for="newAuthor">New Author:</label>
-    <input type="text" id="newAuthor" name="newAuthors" placeholder="New Author">
-    <button type="button" id="addAuthor">Add New Author</button>
-
-  <h2>Artists</h2>
-    <div id="artists-container">
-      {{#each comic.artists}}
-      <div class="artist-container">
-        <select name="artists[]">
-          <option value="{{this._id}}" selected>{{this.aName}}</option>
-          {{#each artistsList}}
+      {{!-- author edits --}}
+      <h3>Edit Writers</h3>
+      <div id="author-container">
+        {{#each comic.authors}}
+        <div class="author-container">
+          <select name="authors[]">
+            <option value="{{this._id}}" selected> {{this.aName}}</option>
+            {{#each authorsList}}
             <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
               {{this.aName}}
             </option>
-          {{/each}}
-        </select>
-        <button type="button" class="remove-artist" data-id="{{this._id}}">Remove</button>
+            {{/each}}
+          </select>
+          <button type="button" class="remove-author" data-id="{{this.id}}">Remove</button>
+        </div>
+        {{/each}}
       </div>
-      {{/each}}
-    </div>
-    
-    <label for="newArtist">New Artist Name:</label>
-    <input type="text" id="newArtist" name="newArtists" placeholder="Enter new artist's name" />
-    <button type="button" id="addArtist">Add New Artist</button>
+      <label for="newAuthor">New Author:</label>
+      <input type="text" id="newAuthor" name="newAuthors[]" placeholder="New Author">
+      <button type="button" id="addAuthor">Add New Author</button>
 
-    <button type="submit">Save Changes</button>
-  </form>
+      <h2>Artists</h2>
+      <div id="artists-container">
+        {{#each comic.artists}}
+        <div class="artist-container">
+          <select name="artists[]">
+            <option value="{{this._id}}" selected>{{this.aName}}</option>
+            {{#each artistsList}}
+            <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
+              {{this.aName}}
+            </option>
+            {{/each}}
+          </select>
+          <button type="button" class="remove-artist" data-id="{{this._id}}">Remove</button>
+        </div>
+        {{/each}}
+      </div>
+
+      <label for="newArtist">New Artist Name:</label>
+      <input type="text" id="newArtist" name="newArtists" placeholder="Enter new artist's name" />
+      <button type="button" id="addArtist">Add New Artist</button>
+
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
 </div>

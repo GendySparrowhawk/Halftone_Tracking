@@ -11,6 +11,7 @@ const Publisher = require("../models/Publisher");
 const gfs = require("../config/connection");
 const Customer = require("../models/Customer");
 const CustomerComic = require("../models/CustomerComic");
+const { release } = require("os");
 
 // view comics page for a user
 router.get("/", authenticate, async (req, res) => {
@@ -233,12 +234,32 @@ router.post(
   async (req, res) => {
     console.log("add variant route tried");
     try {
-      const comicId = req.params.comicId;
-      const { name, coverImage, isIncentive } = req.body;
+      const comicId = req.params.id;
+      const { name, isIncentive } = req.body;
+      const coverImage = req.file ? req.file.filename : null;
+      const comic = await Comic.findById(comicId);
+
+      if (!comic) {
+        return res.redirect(
+          `${req.headers.referer}?message=No+coimc+detected&messageType=error`
+        );
+      }
+      const newVariant = {
+        name,
+        isIncentive: isIncentive === "true",
+        coverImage,
+      };
+      comic.variants.push(newVariant);
+      await comic.save();
+      console.log("Variant added successfully");
+      return res.redirect(
+        `${req.headers.referer}?message=variant+added!&messageType=success`
+      );
     } catch (err) {
-      return res
-        .status(500)
-        .json({ message: "error adding variant ask jacob to check route" });
+      console.error("Error adding to cust", err);
+      return res.redirect(
+        `${req.headers.referer}?message=Error+occurred+tell+Jacob+to+check+route&messageType=error`
+      );
     }
   }
 );
@@ -267,7 +288,9 @@ router.post("/:id/edit", upload.none(), authenticate, async (req, res) => {
     const comic = await Comic.findById(comicId);
 
     if (!comic) {
-      return res.status(404).send("comic not found");
+      return res.redirect(
+        `${req.headers.referer}?message=No+coimc+detected&messageType=error`
+      );
     }
     const updates = {};
 
@@ -287,10 +310,10 @@ router.post("/:id/edit", upload.none(), authenticate, async (req, res) => {
     const authorIds = [];
     if (newAuthors && Array.isArray(newAuthors)) {
       for (const authorName of newAuthors) {
-        if (authorName.trim() !=="") {
-          const newAuthor = await Author.create({ aName: authorName })
-          authorIds.push(newAuthor._id)
-          console.log("new author added")
+        if (authorName.trim() !== "") {
+          const newAuthor = await Author.create({ aName: authorName });
+          authorIds.push(newAuthor._id);
+          console.log("new author added");
         }
       }
     }
@@ -305,7 +328,7 @@ router.post("/:id/edit", upload.none(), authenticate, async (req, res) => {
         }
       }
     }
-    
+
     updates.artists = artistIds;
     const updatedComic = await Comic.findByIdAndUpdate(
       comicId,
@@ -314,13 +337,72 @@ router.post("/:id/edit", upload.none(), authenticate, async (req, res) => {
     );
 
     if (!updatedComic) {
-      return res.status(404).send("error updating comic, tell jacob");
+      return res.redirect(
+        `${req.headers.referer}?message=no+updated+comic+found+tell+jacob&messageType=error`
+      );
     }
 
-    res.redirect(`/comics/${comicId}`);
+    return res.redirect(
+      `${req.headers.referer}?message=Comic+updated&messageType=success`
+    );
   } catch (err) {
     console.error("Error updating comic:", err);
-    res.status(500).send("Error updating comic");
+    return res.redirect(
+      `${req.headers.referer}?message=error+updating+comic+tell+jacob&messageType=error`
+    );
   }
 });
+
+// add the next in series
+  router.post(
+    "/:id/next",
+    upload.single("coverImage"),
+    authenticate,
+    async (req, res) => {
+      console.log("add next in series tried");
+      try {
+        const comicId = req.params.id;
+        const { releaseDate, FOC } = req.body;
+        const coverImage = req.file ? req.file.location : null;
+        console.log(req.file)
+
+        const comic = await Comic.findById(comicId);
+
+        if (!comic) {
+          return res.redirect(
+            `${req.headers.referer}?message=No+comic+found&messageType=error`
+          );
+        }
+        const newComic = new Comic({
+          title: comic.title,
+          issue: comic.issue + 1,
+          releaseDate: releaseDate || null,
+          FOC: FOC || comic.FOC,
+          series: comic.series,
+          publisher: comic.publisher,
+          authors: comic.authors,
+          artists: comic.artists,
+          description: comic.description,
+          variants: [],
+        });
+        if (coverImage) {
+          console.log("pushing new img to variant")
+          newComic.variants.push({
+            name: "A Cover",
+            isIncentive: false,
+            coverImage,
+            artist: comic.artists[0],
+          });
+        }
+        await newComic.save();
+        console.log("next issue added");
+        return res.redirect(`/comics/${newComic._id}`)
+      } catch (err) {
+        console.error("error adding next:", err);
+        return res.redirect(
+          `${req.headers.referer}?message=error+adding+comic+tell+jacob+line+362&messageType=error`
+        );
+      }
+    }
+  );
 module.exports = router;
