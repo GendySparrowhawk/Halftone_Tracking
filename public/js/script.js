@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const custForm = document.querySelector("#custForm");
   const comicForm = document.querySelector("#comicForm");
+  const variantForm = document.querySelector("#variantForm");
   const custBtn = document.querySelector("#addCustBtn");
   const comicBtn = document.querySelector("#addComicBtn");
   const span = document.querySelectorAll(".close");
@@ -13,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const addNextSeriesModal = document.querySelector("#nextSeriesForm");
   const editComicBtn = document.querySelector("#editComicBtn");
   const addNextSeriesBtn = document.querySelector("#addNextSeriesBtn");
+  const variantBtn = document.querySelector("#addVariantBtn"); 
 
   if (message) {
     alert(`${messageType.toUpperCase()}: ${decodeURIComponent(message)}`);
@@ -34,11 +36,15 @@ document.addEventListener("DOMContentLoaded", function () {
     comicForm.style.display = "block";
   };
 
+  variantBtn.onclick = function () {
+    variantForm.style.display = "block";
+  };
   // Hide forms when close button or outside form is clicked
   span.forEach(function (closeBtn, index) {
     closeBtn.onclick = function () {
       if (index === 0) custForm.style.display = "none";
       if (index === 1) comicForm.style.display = "none";
+      if (index === 2) variantForm.style.display = "none";
     };
   });
 
@@ -57,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.target === custForm) custForm.style.display = "none";
     if (e.target === comicForm) comicForm.style.display = "none";
     if (e.target === editComicModal) editComicModal.style.display = "none";
+    if (e.target === variantForm) variantForm.style.display = "none"
     if (e.target === addNextSeriesModal)
       addNextSeriesModal.style.display = "none";
   };
@@ -107,6 +114,17 @@ document.addEventListener("DOMContentLoaded", function () {
   artistsContainer.addEventListener("click", function (event) {
     if (event.target.classList.contains("remove-artist")) {
       event.target.parentElement.remove();
+    }
+  });
+
+  // variant form adding artist handled
+  variantForm.querySelector("form").addEventListener("submit", function (e) {
+    const artistSelect = document.querySelector("#artistSelect");
+    const newArtistInput = document.querySelector("#newArtist").value.trim();
+
+    if (!artistSelect.value && !newArtistInput) {
+      e.preventDefault();
+      alert("Please select an artist or add a new one.");
     }
   });
 });

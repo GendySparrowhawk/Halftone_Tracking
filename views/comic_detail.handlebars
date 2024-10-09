@@ -1,75 +1,124 @@
 <div class="comic-main">
   <div class="cover-image">
-    {{#if comic.variants.[0].coverImage}}
-      <img src="{{comic.variants.[0].coverImage}}" alt="Cover Image" />
+    {{#if comic.variants.0.coverImage}}
+    <img src="{{comic.variants.0.coverImage}}" alt="Cover Image">
     {{else}}
-      <p>No cover image available.</p>
+    <p>no cover image found</p>
     {{/if}}
   </div>
-    <div class="comic-details">
-      <h1>{{comic.title}} #{{comic.issue}}</h1>
-      <h2>release date: {{formatDate comic.releaseDate "MM/DD/YYYY"}}</h2>
-      <h2>FOC: {{formatDate coimc.FOC "MM/DD/YYYY"}}</h2>
-      <p>{{comic.description}}</p>
-      <div class="creators">
-        {{#each comic.authors}}
-        <p>Writers</p>
-        <li>{{this.aName}}</li>
-        {{else}}
-        <li>No Writers found</li>
-        {{/each}}
-      </div>
-      <div class="creators"></div>
-      <p>Artists</p>
+
+  <div class="comic-details">
+    <h1>{{comic.title}} #{{comic.issue}}</h1>
+    <h2>Release Date: {{formatDate comic.releaseDate "MM/DD/YYYY"}}</h2>
+    <h2>FOC: {{formatDate comic.FOC "MM/DD/YYYY"}}</h2>
+    <p>{{comic.description}}</p>
+    <p>Writers:</p>
+    {{#if comic.authors.length}}
+    <ul>{{#each comic.authors}}
+      <li>{{this.aName}}</li>
+      {{/each}}
+    </ul>
+    {{else}}
+    <p>no writers found</p>
+    {{/if}}
+
+    <p>Artists:</p>
+    {{#if comic.artists.length}}
+    <ul>
       {{#each comic.artists}}
       <li>{{this.aName}}</li>
-      {{else}}
-      <li>No Artists found</li>
       {{/each}}
-    </div>
+    </ul>
+    {{else}}
+    <p>No Artists found</p>
+    {{/if}}
   </div>
   <div class="comic-pulls">
-    <h2>Customers pulling this comic</h2>
+    <h2>Customers Pulling This Comic</h2>
     {{#if customers.length}}
     <ul>
       {{#each customers}}
       <li>{{this.firstName}} {{this.lastName}}</li>
+      <button class="remove-pull" data-customer-id="{{this._id}}" data-comic-id="{{comic._id}}">Remove</button>
       {{/each}}
     </ul>
     {{else}}
-    <p>no customers have pulled this yet</p>
+    <p>No customers have pulled this yet.</p>
     {{/if}}
   </div>
-  <button id="editComicBtn" class="my-button">Edit Comic</button>
-  <button id="addNextSeriesBtn" class="my-button">Add the next coimc in series</button>
-
 </div>
+
+<div class="modal" id="removePullModal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Confirm Removal</h2>
+    <p>Are you sure you want to remove <span id="customerName"></span> from pulling this comic?</p>
+    <button id="confirmRemovePull" class="my-button">Yes, Remove</button>
+    <button class="my-button close">Cancel</button>
+  </div>
+</div>
+
+<div class="variant-covers">
+  <h2>Variant Covers</h2>
+  {{#if comic.variants.length}}
+  <div class="variant-list">
+    {{#each comic.variants}}
+    <div class="variant-card {{#if this.isIncentive}}incentive{{/if}}">
+      <h3>{{this.name}}</h3>
+      {{#if this.coverImage}}
+      <img src="{{this.coverImage}}" alt="{{this.name}} Cover Image">
+      {{else}}
+      <p>No cover image available for this variant.</p>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <p>No variant covers available.</p>
+  {{/if}}
+</div>
+
+
+<div class="comic-actions">
+  <button id="addNextSeriesBtn" class="my-button">Add Next in Series</button>
+  <button id="editComicBtn" class="my-button">Edit Comic</button>
+  <button id="addVariantBtn" class="my-button">Add Variant</button>
 </div>
 
 {{!-- manage variants --}}
-<div class="variant-form modal">
+<div class="variant-form modal" id="variantForm">
+  <span class="close">&times;</span>
   <h2>Add a Variant Cover</h2>
-  <form class="variant-form" action="/comics/{{comic._id}}/variant" method="POST" enctype="multipart/form-data">
+  <form action="/comics/{{comic._id}}/variant" method="POST" enctype="multipart/form-data">
     {{#each errors}}
     <p class="error">{{this}}</p>
     {{/each}}
     <label for="name">Variant Name:</label>
-    <input type="text" name="name" placeholder="name: eg:Jim Lee Cardstock 1:25" />
+    <input type="text" name="name" placeholder="name: eg: Jim Lee Cardstock 1:25" required />
+
     <label for="isIncentive">Is Incentive?</label>
-    <input type="checkbox" name="isIncentive" placeholder="Incentive Cover" />
+    <input type="checkbox" name="isIncentive" />
+
     <label for="coverImage">Cover Image</label>
     <input type="file" name="coverImage" id="coverImage" accept="image/*" required />
 
-    <label for="artist"></label>
-    <select name="artist" id="artist">
+    <label for="artist">Select Artist</label>
+    <select name="artist" id="artistSelect">
       <option value="">Select Artist</option>
-      {{#each artistsList}}
+      {{#each artistList}}
       <option value="{{this._id}}">{{this.aName}}</option>
+      {{else}}
+      <option disabled>No artists available</option>
       {{/each}}
     </select>
-    <button calss="my-button">Create Variant</button>
+
+    <label for="newArtist">Or Add New Artist</label>
+    <input type="text" name="newArtist" id="newArtist" placeholder="New Artist Name" />
+
+    <button type="submit" class="my-button">Create Variant</button>
   </form>
 </div>
+
 {{!-- add next in series form --}}
 <div id="nextSeriesForm" class="modal">
   <div class="next-form-content">
@@ -125,7 +174,7 @@
         <div class="author-container">
           <select name="authors[]">
             <option value="{{this._id}}" selected> {{this.aName}}</option>
-            {{#each authorsList}}
+            {{#each authorList}}
             <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
               {{this.aName}}
             </option>
@@ -145,7 +194,7 @@
         <div class="artist-container">
           <select name="artists[]">
             <option value="{{this._id}}" selected>{{this.aName}}</option>
-            {{#each artistsList}}
+            {{#each artistList}}
             <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
               {{this.aName}}
             </option>

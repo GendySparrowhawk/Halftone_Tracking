@@ -79,7 +79,7 @@ router.get("/:comicId", authenticate, async (req, res) => {
       .populate("customer")
       .lean();
     const customers = customerComics.map((cc) => cc.customer);
-
+console.log(artistList)
     return res.render("comic_detail", {
       comic,
       customers,
@@ -235,8 +235,8 @@ router.post(
     console.log("add variant route tried");
     try {
       const comicId = req.params.id;
-      const { name, isIncentive } = req.body;
-      const coverImage = req.file ? req.file.filename : null;
+      const { name, isIncentive, artist, newArtist } = req.body;
+      const coverImage = req.file ? req.file.location : null;
       const comic = await Comic.findById(comicId);
 
       if (!comic) {
@@ -244,11 +244,22 @@ router.post(
           `${req.headers.referer}?message=No+coimc+detected&messageType=error`
         );
       }
+
+      let artistId = artist
+
+      if(newArtist) {
+        const newArtistDoc = await Artist.create({ aName: newArtist.trim() })
+        artistId = newArtistDoc._id;
+        console.log("new artist added to db")
+      }
+
       const newVariant = {
         name,
         isIncentive: isIncentive === "true",
         coverImage,
+        artist: artistId,
       };
+
       comic.variants.push(newVariant);
       await comic.save();
       console.log("Variant added successfully");
@@ -256,7 +267,7 @@ router.post(
         `${req.headers.referer}?message=variant+added!&messageType=success`
       );
     } catch (err) {
-      console.error("Error adding to cust", err);
+      console.error("Error adding variant", err);
       return res.redirect(
         `${req.headers.referer}?message=Error+occurred+tell+Jacob+to+check+route&messageType=error`
       );
