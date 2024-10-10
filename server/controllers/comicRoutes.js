@@ -60,18 +60,19 @@ router.get("/:comicId", authenticate, async (req, res) => {
   try {
     const userId = req.user._id;
     const comicId = req.params.comicId;
-
+    
     const comic = await Comic.findById(comicId)
-      .populate("series")
-      .populate("authors")
-      .populate("artists")
-      .populate("publisher")
-      .lean();
-
+    .populate("series")
+    .populate("authors")
+    .populate("artists")
+    .populate("publisher")
+    .lean();
+    
     if (!comic) {
       return res.status(404).render("404", { message: "comic not found" });
     }
-
+    const allCustomers = await Customer.find();
+    const publisherList = await Publisher.find().lean();
     const authorsList = await Author.find().lean();
     const artistList = await Artist.find().lean();
     const seriesList = await Series.find().lean();
@@ -79,12 +80,14 @@ router.get("/:comicId", authenticate, async (req, res) => {
       .populate("customer")
       .lean();
     const customers = customerComics.map((cc) => cc.customer);
-console.log(artistList)
+    console.log(allCustomers);
     return res.render("comic_detail", {
       comic,
       customers,
+      allCustomers,
       user: req.user,
       seriesList,
+      publisherList,
       authorsList,
       artistList,
     });
@@ -245,12 +248,12 @@ router.post(
         );
       }
 
-      let artistId = artist
+      let artistId = artist;
 
-      if(newArtist) {
-        const newArtistDoc = await Artist.create({ aName: newArtist.trim() })
+      if (newArtist) {
+        const newArtistDoc = await Artist.create({ aName: newArtist.trim() });
         artistId = newArtistDoc._id;
-        console.log("new artist added to db")
+        console.log("new artist added to db");
       }
 
       const newVariant = {
@@ -288,10 +291,12 @@ router.post("/:id/edit", upload.none(), authenticate, async (req, res) => {
       description,
       series,
       newSeries,
-      authors = [],
-      newAuthors = [],
-      artists = [],
-      newArtists = [],
+      author,
+      newAuthor,
+      artist,
+      newArtist,
+      publisher,
+      newPublisher,
     } = req.body;
 
     console.log(req.body);
@@ -312,35 +317,58 @@ router.post("/:id/edit", upload.none(), authenticate, async (req, res) => {
     if (description) updates.description = description;
 
     if (newSeries && newSeries.trim() !== "") {
-      const newSeriesDoc = await Series.create({ title: newSeries });
-      updates.series = newSeriesDoc._id;
+      let existingSeries = await Series.findOne({ title: newSeries.trim() });
+      if (existingSeries) {
+        updates.series = [existingSeries._id];
+        console.log("series already exists add to said series");
+      } else {
+        const newSeriesDoc = await Series.create({ title: newSeries.trim() });
+        updates.series = newSeriesDoc._id;
+        console.log("new series added");
+      }
     } else if (series) {
       updates.series = series;
     }
 
-    const authorIds = [];
-    if (newAuthors && Array.isArray(newAuthors)) {
-      for (const authorName of newAuthors) {
-        if (authorName.trim() !== "") {
-          const newAuthor = await Author.create({ aName: authorName });
-          authorIds.push(newAuthor._id);
-          console.log("new author added");
-        }
+    if (newAuthor && newAuthor.trim() !== "") {
+      let existingAuthor = await Author.findOne({ aName: newAuthor.trim() });
+      if (existingAuthor) {
+        updates.authors = [existingAuthor._id];
+        console.log("existing author used");
+      } else {
+        const newAuthorDoc = await Author.create({ aName: newAuthor });
+        updates.authors = [newAuthorDoc._id];
+        console.log("new author added");
       }
+    } else if (author) {
+      updates.authors = [author];
     }
 
-    const artistIds = [];
-    if (newArtists && Array.isArray(newArtists)) {
-      for (const artistName of newArtists) {
-        if (artistName.trim() !== "") {
-          const newArtist = await Artist.create({ aName: artistName });
-          artistIds.push(newArtist._id);
-          console.log("new artist added");
-        }
+    if (newArtist && newArtist.trim() !== "") {
+      let existingArtist = await Artist.findOne({ aName: newArtist.trim() });
+      if(existingArtist) {
+        updates.artists = [existingArtist._id];
+        console.log("existing artsit used")
+      } else {
+        const newArtistDoc = await Artist.create({ aName: newArtist });
+        updates.newArtistDoc = [newArtistDoc._id];
+        console.log("new artist added to db");
       }
+    } else if (artist) {
+      updates.artists = [artist];
     }
 
-    updates.artists = artistIds;
+    if (newPublisher && newPublisher.trim() !== "") {
+      let existingPublisher = await Publisher.findOne({ name: newPublisher.trim() });
+      if(existingPublisher) {
+        updates.publisher = [existingPublisher._id];
+        console.log("publihser added")
+      } else {
+        const newPublisherDoc = await Publisher.create({ name: newPublisher });
+        updates.newPublisherDoc = newPublisherDoc._id;
+        console.log("added new publisher")
+      }
+    }
     const updatedComic = await Comic.findByIdAndUpdate(
       comicId,
       { $set: updates },
@@ -365,55 +393,55 @@ router.post("/:id/edit", upload.none(), authenticate, async (req, res) => {
 });
 
 // add the next in series
-  router.post(
-    "/:id/next",
-    upload.single("coverImage"),
-    authenticate,
-    async (req, res) => {
-      console.log("add next in series tried");
-      try {
-        const comicId = req.params.id;
-        const { releaseDate, FOC } = req.body;
-        const coverImage = req.file ? req.file.location : null;
-        console.log(req.file)
+router.post(
+  "/:id/next",
+  upload.single("coverImage"),
+  authenticate,
+  async (req, res) => {
+    console.log("add next in series tried");
+    try {
+      const comicId = req.params.id;
+      const { releaseDate, FOC } = req.body;
+      const coverImage = req.file ? req.file.location : null;
+      console.log(req.file);
 
-        const comic = await Comic.findById(comicId);
+      const comic = await Comic.findById(comicId);
 
-        if (!comic) {
-          return res.redirect(
-            `${req.headers.referer}?message=No+comic+found&messageType=error`
-          );
-        }
-        const newComic = new Comic({
-          title: comic.title,
-          issue: comic.issue + 1,
-          releaseDate: releaseDate || null,
-          FOC: FOC || comic.FOC,
-          series: comic.series,
-          publisher: comic.publisher,
-          authors: comic.authors,
-          artists: comic.artists,
-          description: comic.description,
-          variants: [],
-        });
-        if (coverImage) {
-          console.log("pushing new img to variant")
-          newComic.variants.push({
-            name: "A Cover",
-            isIncentive: false,
-            coverImage,
-            artist: comic.artists[0],
-          });
-        }
-        await newComic.save();
-        console.log("next issue added");
-        return res.redirect(`/comics/${newComic._id}`)
-      } catch (err) {
-        console.error("error adding next:", err);
+      if (!comic) {
         return res.redirect(
-          `${req.headers.referer}?message=error+adding+comic+tell+jacob+line+362&messageType=error`
+          `${req.headers.referer}?message=No+comic+found&messageType=error`
         );
       }
+      const newComic = new Comic({
+        title: comic.title,
+        issue: comic.issue + 1,
+        releaseDate: releaseDate || null,
+        FOC: FOC || comic.FOC,
+        series: comic.series,
+        publisher: comic.publisher,
+        authors: comic.authors,
+        artists: comic.artists,
+        description: comic.description,
+        variants: [],
+      });
+      if (coverImage) {
+        console.log("pushing new img to variant");
+        newComic.variants.push({
+          name: "A Cover",
+          isIncentive: false,
+          coverImage,
+          artist: comic.artists[0],
+        });
+      }
+      await newComic.save();
+      console.log("next issue added");
+      return res.redirect(`/comics/${newComic._id}`);
+    } catch (err) {
+      console.error("error adding next:", err);
+      return res.redirect(
+        `${req.headers.referer}?message=error+adding+comic+tell+jacob+line+362&messageType=error`
+      );
     }
-  );
+  }
+);
 module.exports = router;

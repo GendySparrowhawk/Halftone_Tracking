@@ -10,7 +10,7 @@
       <h3>{{title}} #{{issue}}</h3>
       <p>Release Date: {{formatDate releaseDate "DD/MM/YY"}}</p>
     </a>
-    <form action="/pull/quick-add" method="POST">
+    <form action="/pull/" method="POST">
       <input type="hidden" name="comicId" value="{{_id}}" />
       <label for="customer">Pull for Customer: </label>
       <select name="customerId" id="customer">

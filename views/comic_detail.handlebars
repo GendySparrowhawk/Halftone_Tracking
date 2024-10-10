@@ -1,3 +1,9 @@
+<div class="comic-actions">
+  <button id="addNextSeriesBtn" class="my-button">Add Next in Series</button>
+  <button id="editComicBtn" class="my-button">Edit Comic</button>
+  <button id="addVariantBtn" class="my-button">Add Variant</button>
+</div>
+
 <div class="comic-main">
   <div class="cover-image">
     {{#if comic.variants.0.coverImage}}
@@ -36,15 +42,27 @@
   <div class="comic-pulls">
     <h2>Customers Pulling This Comic</h2>
     {{#if customers.length}}
-    <ul>
       {{#each customers}}
-      <li>{{this.firstName}} {{this.lastName}}</li>
+      <p>{{this.firstName}} {{this.lastName}}</p>
       <button class="remove-pull" data-customer-id="{{this._id}}" data-comic-id="{{comic._id}}">Remove</button>
       {{/each}}
-    </ul>
     {{else}}
     <p>No customers have pulled this yet.</p>
     {{/if}}
+    {{!-- add to customers pull form --}}
+    <form action="/pull/" method="POST">
+      <input type="hidden" name="comicId" value="{{comic._id}}" />
+      <label for="customer">Pull for Customer: </label>
+      <select name="customerId" id="customerSelect" required>
+        <option value="" disabled selected>Select a customer</option>
+        {{#each allCustomers}}
+        <option value="{{this._id}}">{{this.firstName}} {{this.lastName}}</option>
+        {{else}}
+        <option value="">no customers found</option>
+        {{/each}}
+      </select>
+      <button class="my-button">Add to Pull List</button>
+    </form>
   </div>
 </div>
 
@@ -79,11 +97,7 @@
 </div>
 
 
-<div class="comic-actions">
-  <button id="addNextSeriesBtn" class="my-button">Add Next in Series</button>
-  <button id="editComicBtn" class="my-button">Edit Comic</button>
-  <button id="addVariantBtn" class="my-button">Add Variant</button>
-</div>
+
 
 {{!-- manage variants --}}
 <div class="variant-form modal" id="variantForm">
@@ -169,45 +183,38 @@
 
       {{!-- author edits --}}
       <h3>Edit Writers</h3>
-      <div id="author-container">
-        {{#each comic.authors}}
-        <div class="author-container">
-          <select name="authors[]">
-            <option value="{{this._id}}" selected> {{this.aName}}</option>
-            {{#each authorList}}
-            <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
-              {{this.aName}}
-            </option>
-            {{/each}}
-          </select>
-          <button type="button" class="remove-author" data-id="{{this.id}}">Remove</button>
-        </div>
+      <label for="author">Select Writer</label>
+      <select name="author" id="authorSelect">
+        <option value="">Select Writer</option>
+        {{#each authorList}}
+        <option value="{{this._id}}">{{this.aName}}</option>
         {{/each}}
-      </div>
-      <label for="newAuthor">New Author:</label>
-      <input type="text" id="newAuthor" name="newAuthors[]" placeholder="New Author">
-      <button type="button" id="addAuthor">Add New Author</button>
+      </select>
+
+      <label for="newAuthor">or add new Author</label>
+      <input type="text" id="newAuthor" name="newAuthor" placeholder="New Writer">
 
       <h2>Artists</h2>
-      <div id="artists-container">
-        {{#each comic.artists}}
-        <div class="artist-container">
-          <select name="artists[]">
-            <option value="{{this._id}}" selected>{{this.aName}}</option>
-            {{#each artistList}}
-            <option value="{{this._id}}" {{#ifEquals this._id ../this._id}}selected{{/ifEquals}}>
-              {{this.aName}}
-            </option>
-            {{/each}}
-          </select>
-          <button type="button" class="remove-artist" data-id="{{this._id}}">Remove</button>
-        </div>
-        {{/each}}
-      </div>
+     <label for="artist">Select Artist</label>
+     <select name="artist" id="artistSelect">
+      <option value="">Select Artist</option>
+      {{#each artistList}}
+      <option value="{{this._id}}">{{this.aName}}</option>
+      {{/each}}
+     </select>
+     <label for="newArtist">Or add new Artist</label>
+     <input type="text" id="newArtist" name="newArtist" placeholder="new Artist">
 
-      <label for="newArtist">New Artist Name:</label>
-      <input type="text" id="newArtist" name="newArtists" placeholder="Enter new artist's name" />
-      <button type="button" id="addArtist">Add New Artist</button>
+     <label for="publisher">Select Publisher</label>
+     <select name="publisher" id="publisherSelect">
+      <option value="">Select PUblisher</option>
+      {{#each publisherList}}
+      <option value="{{this._id}}">{{this.name}}</option>
+      {{/each}}
+     </select>
+
+     <label for="newPublisher">Or add a new Publisher</label>
+     <input type="text" id="newPublisher" name="newPublisher" placeholder="ie Marvel 2">
 
       <button type="submit">Save Changes</button>
     </form>

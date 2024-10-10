@@ -7,6 +7,9 @@ const publisherSchema = new Schema({
     },
     website: {
         type: String
+    },
+    distributor: {
+        type: String,
     }
 });
 
