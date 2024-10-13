@@ -127,4 +127,6 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("Please select an artist or add a new one.");
     }
   });
+
+
 });

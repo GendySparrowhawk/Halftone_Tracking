@@ -71,7 +71,7 @@ router.get("/:comicId", authenticate, async (req, res) => {
     if (!comic) {
       return res.status(404).render("404", { message: "comic not found" });
     }
-    const allCustomers = await Customer.find();
+    const allCustomers = await Customer.find().lean();
     const publisherList = await Publisher.find().lean();
     const authorsList = await Author.find().lean();
     const artistList = await Artist.find().lean();
@@ -80,7 +80,7 @@ router.get("/:comicId", authenticate, async (req, res) => {
       .populate("customer")
       .lean();
     const customers = customerComics.map((cc) => cc.customer);
-    console.log(allCustomers);
+    console.log(artistList);
     return res.render("comic_detail", {
       comic,
       customers,

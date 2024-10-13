@@ -44,11 +44,22 @@
     {{#if customers.length}}
       {{#each customers}}
       <p>{{this.firstName}} {{this.lastName}}</p>
-      <button class="remove-pull" data-customer-id="{{this._id}}" data-comic-id="{{comic._id}}">Remove</button>
+       <button class="remove-comic-btn" data-customer-id="{{_id}}" data-comic-id="{{comicId}}">Remove Comic</button>
       {{/each}}
     {{else}}
     <p>No customers have pulled this yet.</p>
     {{/if}}
+
+    {{!-- remove modal --}}
+    <div id="confrimModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <p>Are yuo sure you want to remove this from their pull list?</p>
+      </div>
+      <div class="modal-footer">
+        <button id="confirmrRemove" class="my-button">Yes</button>
+      </div>
+    </div>
+    
     {{!-- add to customers pull form --}}
     <form action="/pull/" method="POST">
       <input type="hidden" name="comicId" value="{{comic._id}}" />
@@ -66,15 +77,6 @@
   </div>
 </div>
 
-<div class="modal" id="removePullModal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Confirm Removal</h2>
-    <p>Are you sure you want to remove <span id="customerName"></span> from pulling this comic?</p>
-    <button id="confirmRemovePull" class="my-button">Yes, Remove</button>
-    <button class="my-button close">Cancel</button>
-  </div>
-</div>
 
 <div class="variant-covers">
   <h2>Variant Covers</h2>
@@ -95,9 +97,6 @@
   <p>No variant covers available.</p>
   {{/if}}
 </div>
-
-
-
 
 {{!-- manage variants --}}
 <div class="variant-form modal" id="variantForm">
