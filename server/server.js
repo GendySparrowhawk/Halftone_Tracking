@@ -23,8 +23,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const hbs = exphbs.create({
   helpers: {
-    formatDate: function (date, format) {
-      return moment(date).format(format);
+    formatDate: function (dateString, format) {
+      return moment(dateString).utc().format(format);
     },
     getCoverImageUrl: function (key) {
       const baseUrl = "https://halftone-tracking.s3.us-east-2.amazonaws.com/";

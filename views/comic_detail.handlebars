@@ -40,51 +40,43 @@
     {{/if}}
   </div>
   <div class="comic-pulls">
+    {{!-- add to customers pull form --}}
+    <form action="/pull/" method="POST">
+      <input type="hidden" name="comicId" value="{{comic._id}}" />
+      <label for="customer">Pull for Customer: </label>
+      <select name="customerId" id="customerSelect" required>
+        <option value="" disabled selected>Select a customer</option>
+        {{#each allCustomers}}
+        <option value="{{this._id}}">{{this.firstName}} {{this.lastName}}</option>
+        {{else}}
+        <option value="">no customers found</option>
+        {{/each}}
+      </select>
+      <button class="my-button">Add to Pull List</button>
+    </form>
     <h2>Customers Pulling This Comic</h2>
-    {{#if customers.length}}
-    {{#each customers}}
-    <div class="customer-pull">
-      <p>{{this.firstName}} {{this.lastName}}</p>
-      <form action="/pull/remove" method="POST" class="remove-pull-form">
-        <input type="hidden" name="customerId" value="{{this._id}}">
-        <input type="hidden" name="comicId" value="{{../comic._id}}">
-        <button type="submit" class="my-button">Remove Pull</button>
-      </form>
-    </div>
-    {{/each}}
-    {{else}}
-    <p>No customers have pulled this yet.</p>
-    {{/if}}
-  </div>
-
-  {{!-- remove modal --}}
-  <div id="confrimModal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <p>Are yuo sure you want to remove this from their pull list?</p>
-    </div>
-    <div class="modal-footer">
-      <button id="confirmrRemove" class="my-button">Yes</button>
-    </div>
-  </div>
-
-  {{!-- add to customers pull form --}}
-  <form action="/pull/" method="POST">
-    <input type="hidden" name="comicId" value="{{comic._id}}" />
-    <label for="customer">Pull for Customer: </label>
-    <select name="customerId" id="customerSelect" required>
-      <option value="" disabled selected>Select a customer</option>
-      {{#each allCustomers}}
-      <option value="{{this._id}}">{{this.firstName}} {{this.lastName}}</option>
-      {{else}}
-      <option value="">no customers found</option>
+    <div class="customer-pull-list">
+      {{#if customers.length}}
+      {{#each customers}}
+      <div class="customer-pull">
+        <p>{{this.firstName}} {{this.lastName}}</p>
+        <form action="/pull/remove" method="POST" class="remove-pull-form">
+          <input type="hidden" name="customerId" value="{{this._id}}">
+          <input type="hidden" name="comicId" value="{{../comic._id}}">
+          <button type="submit" class="my-button">Remove Pull</button>
+        </form>
+      </div>
       {{/each}}
-    </select>
-    <button class="my-button">Add to Pull List</button>
-  </form>
-</div>
+      {{else}}
+      <p>No customers have pulled this yet.</p>
+      {{/if}}
+      <h2>total pulls: {{customers.length}}</h2>
+    </div>
+  </div>
 </div>
 
 
+{{!-- variants --}}
 <div class="variant-covers">
   <h2>Variant Covers</h2>
   {{#if comic.variants.length}}
@@ -106,7 +98,7 @@
 </div>
 
 {{!-- manage variants --}}
-<div class="variant-form modal" id="variantForm">
+<div class="modal" id="variantForm">
   <span class="close">&times;</span>
   <h2>Add a Variant Cover</h2>
   <form action="/comics/{{comic._id}}/variant" method="POST" enctype="multipart/form-data">
@@ -117,7 +109,7 @@
     <input type="text" name="name" placeholder="name: eg: Jim Lee Cardstock 1:25" required />
 
     <label for="isIncentive">Is Incentive?</label>
-    <input type="checkbox" name="isIncentive" />
+    <input type="checkbox" name="isIncentive" value="true" id="isIncentive" />
 
     <label for="coverImage">Cover Image</label>
     <input type="file" name="coverImage" id="coverImage" accept="image/*" required />
@@ -141,7 +133,7 @@
 
 {{!-- add next in series form --}}
 <div id="nextSeriesForm" class="modal">
-  <div class="next-form-content">
+  <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Add Next in Series</h2>
     <form action="/comics/{{comic._id}}/next" method="POST" enctype="multipart/form-data">
@@ -156,7 +148,7 @@
   </div>
 </div>
 {{!-- edit comic details --}}
-<div class="add-details modal" id="editComicForm">
+<div class="modal" id="editComicForm">
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Edit Comic</h2>

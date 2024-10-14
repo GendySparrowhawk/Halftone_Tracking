@@ -71,13 +71,16 @@ router.get("/:comicId", authenticate, async (req, res) => {
     if (!comic) {
       return res.status(404).render("404", { message: "comic not found" });
     }
-    const allCustomers = await Customer.find().lean();
+    const allCustomers = await Customer.find().sort({ firstName: 1, lastName: 1 }).lean();
     const publisherList = await Publisher.find().lean();
     const authorsList = await Author.find().lean();
     const artistList = await Artist.find().lean();
     const seriesList = await Series.find().lean();
     const customerComics = await CustomerComic.find({ comic: comicId })
-      .populate("customer")
+      .populate({
+        path: "customer",
+      options: { sort: { firstName: 1, lastName: 1 } },
+    })
       .lean();
     const customers = customerComics.map((cc) => cc.customer);
     console.log(artistList);
@@ -258,7 +261,7 @@ router.post(
 
       const newVariant = {
         name,
-        isIncentive: isIncentive === "true",
+        isIncentive: req.body.isIncentive ? true : false,
         coverImage,
         artist: artistId,
       };
@@ -444,4 +447,24 @@ router.post(
     }
   }
 );
+
+router.delete('/:id', authenticate, async (req, res) => {
+  const comicId = req.params.id;
+
+  try {
+    const comic = await Comic.findByIdAndDelete(comicId)
+
+    if (!comic) {
+      return res.redirect(
+        `${req.headers.referer}?message=No+comic+found&messageType=error`
+      );
+    }
+    return res.redirect()
+  } catch (err) {
+    console.error("error adding next:", err);
+    return res.redirect(
+      `${req.headers.referer}?message=error+removing+comic+tell+jacob+line+362&messageType=error`
+    );
+  }
+})
 module.exports = router;

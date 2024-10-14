@@ -10,6 +10,63 @@ body {
   background-size: cover;
 }
 
+input,
+textarea {
+  border: 2px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+}
+input::placeholder,
+textarea::placeholder {
+  color: white;
+  opacity: 0.7;
+}
+input:focus,
+textarea:focus {
+  border-color: #0d1d28;
+  box-shadow: 0 0 5px #0d1d28;
+  outline: none;
+}
+input:hover,
+textarea:hover {
+  border-color: #1a394e;
+}
+
+select {
+  border: 2px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  background-color: white;
+  color: #1a394e;
+  appearance: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 80%;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="$primary-color"><path d="M5.5 7l4.5 4.5L14.5 7z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px;
+}
+select::placeholder {
+  color: white;
+  opacity: 0.7;
+}
+select:focus {
+  border-color: #0d1d28;
+  box-shadow: 0 0 5px #0d1d28;
+  outline: none;
+}
+select:hover {
+  border-color: #3498db;
+}
+select option {
+  background-color: #3498db;
+  color: aliceblue;
+}
+
 .hidden {
   display: none;
 }
@@ -200,28 +257,36 @@ a:hover {
 
 .comic-main {
   display: flex;
-  align-items: center;
-  padding: 20px;
+  justify-content: space-between;
+  align-items: flex-start;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #1a394e;
+}
+
+.cover-image {
+  max-width: 300px;
+}
+.cover-image img {
+  width: 100%;
+  border-radius: 8px;
+}
+.cover-image p {
+  text-align: center;
+  margin-top: 10px;
 }
 
 .comic-details {
-  text-align: center;
-  margin-bottom: 20px;
+  margin-left: 20px;
 }
 .comic-details h1 {
-  font-size: 24px;
+  font-size: 2rem;
   margin-bottom: 10px;
 }
-.comic-details h2 {
-  font-size: 18px;
-  margin-bottom: 5px;
-  color: aliceblue;
-}
+.comic-details h2,
 .comic-details p {
-  font-size: 16px;
-  color: aliceblue;
+  margin: 5px 0;
 }
 
 .comic-pulls {
@@ -229,6 +294,8 @@ a:hover {
   flex-direction: column;
   margin-bottom: 20px;
   text-align: center;
+  border-radius: 8px;
+  border: solid #3498db;
 }
 .comic-pulls h2 {
   font-size: 20px;
@@ -249,6 +316,37 @@ a:hover {
 .comic-pulls p {
   font-size: 14px;
 }
+.comic-pulls label {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.customer-pull-list {
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.customer-pull {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 5px 0;
+}
+.customer-pull p {
+  font-size: 1.25rem;
+}
+.customer-pull .my-button {
+  height: 30px;
+  width: 150px;
+  font-size: 0.8rem;
+  padding: 10px, 6px;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
 
 .comic-actions {
   display: flex;
@@ -257,38 +355,43 @@ a:hover {
   margin-bottom: 20px;
 }
 
-.cover-image {
-  width: 100%;
-  max-width: 300px;
-  margin-bottom: 20px;
-}
-.cover-image img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-.cover-image p {
-  font-size: 14px;
+.variant-covers h2 {
   text-align: center;
+  margin-bottom: 1rem;
 }
 
 .variant-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
+  padding: 1rem;
 }
 
 .variant-card {
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  width: 150px;
+  padding: 1rem;
+  max-width: 300px;
+  border-radius: 6px;
   text-align: center;
-  transition: box-shadow 0.3s ease;
+  transition: transform 0.3s, box-shadow 0.3s ease;
+}
+.variant-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+.variant-card img {
+  height: 500px;
+  width: 300px;
+  max-width: 100%;
+  border-radius: 8px;
+}
+.variant-card h3 {
+  margin: 0.5rem 0;
 }
 
 .incentive {
-  border: 1px solid #FFD700;
+  border: 1px solid #ffd700;
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
 
