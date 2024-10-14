@@ -104,14 +104,22 @@ router.post("/quick-add", authenticate, async (req, res) => {
 });
 
 // remove a pull from comic page
-router.delete('/remove', authenticate, async (req, res) => {
+router.post('/remove', authenticate, async (req, res) => {
   console.log("remove pull route tried")
   try {
     const { customerId, comicId } = req.body;
+    if (!customerId) {
+      return res.redirect(`${req.headers.referer}?message=No+customer+found+possible+leak+tell+Jacob&messageType=error`);
+    }
+    if (!comicId) {
+      return res.redirect(`${req.headers.referer}?message=No+comic+found+possible+leak+tell+Jacob&messageType=error`);
+    }
+
     const customerComic = await CustomerComic.findOneAndDelete({
       customer: customerId,
       comic: comicId,
     })
+   
     if (!customerComic) {
       return res.redirect(`${req.headers.referer}?message=No+pull+found+possible+leak+tell+Jacob&messageType=error`);
     }

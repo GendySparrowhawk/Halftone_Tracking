@@ -287,7 +287,7 @@ a:hover {
   transition: box-shadow 0.3s ease;
 }
 
-.variant-card.incentive {
+.incentive {
   border: 1px solid #FFD700;
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
