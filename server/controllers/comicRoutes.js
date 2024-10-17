@@ -261,7 +261,7 @@ router.post(
 
       const newVariant = {
         name,
-        isIncentive: req.body.isIncentive ? true : false,
+        isIncentive: isIncentive ? true : false,
         coverImage,
         artist: artistId,
       };

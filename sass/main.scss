@@ -412,14 +412,14 @@ a:hover {
   }
 
   img {
-    height: 500px;
-    width: 300px;
-    max-width: 100%;
+    max-width: 150px;
+    max-height: 300px;
     border-radius: 8px;
   }
 
   h3 {
     margin: 0.5rem 0;
+    max-width: 150px;
   }
 }
 

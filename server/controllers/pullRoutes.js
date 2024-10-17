@@ -130,4 +130,49 @@ router.post('/remove', authenticate, async (req, res) => {
     return res.redirect(`${req.headers.referer}?message=Error+occurred+tell+Jacob+to+check+route&messageType=error`);
   }
 })
+
+// add a variant 
+router.post('/variant', authenticate, async (req, res) => {
+console.log("add variant attempted");
+try {
+  const { comicId, variantId, customerId } = req.body;
+
+  if(!comicId) {
+    return res.redirect(`${req.headers.referer}?message=No+comic+found+possible+leak+tell+Jacob&messageType=error`);
+
+  }
+  if (!customerId) {
+    return res.redirect(`${req.headers.referer}?message=No+customer+found+possible+leak+tell+Jacob&messageType=error`);
+  }
+  if (!variantId) {
+    return res.redirect(`${req.headers.referer}?message=No+variant+found+possible+leak+tell+Jacob&messageType=error`);
+  }
+  const existingCustomerComic = await CustomerComic.findOne({
+    customer: customerId,
+    comic: comicId,
+    "variant._id": variantId
+  });
+
+  if(existingCustomerComic) {
+    return res.redirect(`${req.headers.referer}?message=This+customer+already+pulled+this+comic&messageType=error`)
+  }
+
+const customerComic = await CustomerComic.create({
+  comic: comicId,
+  customer: customerId,
+  variant: variantId,
+  pullDate,
+  status: 'pulled'
+});
+
+await customerComic.save();
+customerId.comics.push(customerComic._id);
+await customerId.save();
+return res.redirect(`${req.headers.referer}?message=Comic+added+to+pull+list&messageType=success`);
+
+}catch (err) {
+    console.error("Error adding variant", err);
+    return res.redirect(`${req.headers.referer}?message=Error+occurred+tell+Jacob+to+check+route&messageType=error`);
+  }
+})
 module.exports = router;

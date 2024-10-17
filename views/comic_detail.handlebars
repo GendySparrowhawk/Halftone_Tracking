@@ -82,13 +82,17 @@
   {{#if comic.variants.length}}
   <div class="variant-list">
     {{#each comic.variants}}
-    <div class="variant-card {{#if this.isIncentive}}incentive{{/if}}">
-      <h3>{{this.name}}</h3>
+    <div class="variant-card {{#if this.isIncentive}}incentive{{/if}}"
+    data-variant-id="{{this._id}}"
+    data-name="this.name"
+    data-cover-image="{{this.coverImage}}"
+    data-comic-id="{{../comic._id}}">
       {{#if this.coverImage}}
       <img src="{{this.coverImage}}" alt="{{this.name}} Cover Image">
       {{else}}
       <p>No cover image available for this variant.</p>
       {{/if}}
+      <h3>{{this.name}}</h3>
     </div>
     {{/each}}
   </div>
@@ -97,7 +101,7 @@
   {{/if}}
 </div>
 
-{{!-- manage variants --}}
+{{!-- add variants modal --}}
 <div class="modal" id="variantForm">
   <span class="close">&times;</span>
   <h2>Add a Variant Cover</h2>
@@ -147,6 +151,33 @@
     </form>
   </div>
 </div>
+
+{{!-- edit varint form --}}
+<div class="modal" id="variant-edit">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <img src="{{this.coverImage}}" alt="{{this.name}} Cover Image">
+    <form action="/pull/variant" method="POST">
+    <input type="hidden" name="comicId" value="">
+    <input type="hidden" name="variantId" value="">
+   {{#if errors}}
+  <ul>
+    {{#each errors}}
+      <li>{{this}}</li>
+    {{/each}}
+  </ul>
+{{/if}}
+    <label for="customerId">Add to Pull list:</label>
+    <select name="customerId" required>
+      {{#each customers}}
+      <option value="{{this._id}}">{{this.firstName}} {{this.lastName}}</option>
+      {{/each}}
+    </select>
+    <button type="submit" class="my-button">Add Variant</button>
+    </form>
+  </div>
+</div>
+
 {{!-- edit comic details --}}
 <div class="modal" id="editComicForm">
   <div class="modal-content">

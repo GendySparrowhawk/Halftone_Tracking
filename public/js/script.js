@@ -14,7 +14,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const addNextSeriesModal = document.querySelector("#nextSeriesForm");
   const editComicBtn = document.querySelector("#editComicBtn");
   const addNextSeriesBtn = document.querySelector("#addNextSeriesBtn");
-  const variantBtn = document.querySelector("#addVariantBtn"); 
+  const variantBtn = document.querySelector("#addVariantBtn");
+  const variantCards = document.querySelectorAll(".variant-card");
+  const variantEditModal = document.querySelector("#variant-edit");
+  
+  const variantIdInput = document.querySelector("#variantIdInput");
+  const variantCoverImage = document.querySelector("#variantCoverImage");
+  const variantModal = document.querySelector("#variantModal");
 
   if (message) {
     alert(`${messageType.toUpperCase()}: ${decodeURIComponent(message)}`);
@@ -63,10 +69,29 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.target === custForm) custForm.style.display = "none";
     if (e.target === comicForm) comicForm.style.display = "none";
     if (e.target === editComicModal) editComicModal.style.display = "none";
-    if (e.target === variantForm) variantForm.style.display = "none"
+    if (e.target === variantForm) variantForm.style.display = "none";
     if (e.target === addNextSeriesModal)
       addNextSeriesModal.style.display = "none";
+    if (e.target === variantEditModal) variantEditModal.style.display = "none";
   };
+
+  variantCards.forEach(card => {
+    card.addEventListener("click", () => {
+      const variantId = card.getAttribute('data-variant-id');
+      const coverImageUrl = card.getAttribute('data-cover-image');
+
+      variantIdInput.value = variantId;
+      console.log("variantId:", variantId);
+      if (coverImageUrl) {
+        variantCoverImage.src = coverImageUrl;
+        variantCoverImage.alt = "Variant Cover Image";
+      } else {
+        variantCoverImage.src = ''; // or a placeholder image if you prefer
+        variantCoverImage.alt = "No cover image available";
+      }
+      variantModal.style.display = 'block';
+    });
+  });
 
   // Add new author
   document.querySelector("#addAuthor").addEventListener("click", function () {
@@ -128,5 +153,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-
+  
 });
