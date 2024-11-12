@@ -135,7 +135,7 @@ router.post('/remove', authenticate, async (req, res) => {
 router.post('/variant', authenticate, async (req, res) => {
 console.log("add variant attempted");
 try {
-  const { comicId, variantId, customerId } = req.body;
+  const { comicId, variantId, customerId, action } = req.body;
 
   if(!comicId) {
     return res.redirect(`${req.headers.referer}?message=No+comic+found+possible+leak+tell+Jacob&messageType=error`);
@@ -150,13 +150,15 @@ try {
   const existingCustomerComic = await CustomerComic.findOne({
     customer: customerId,
     comic: comicId,
-    "variant._id": variantId
   });
 
   if(existingCustomerComic) {
-    return res.redirect(`${req.headers.referer}?message=This+customer+already+pulled+this+comic&messageType=error`)
+    if(existingCustomerComic.variant.toString() === variantId) {
+      return res.redirect(`${req.headers.referer}?message=This+customer+already+pulled+this+comic&messageType=error`)
+    }
+    return res.json({ message: 'prompt', comicId, variantId, customerId })
   }
-
+  const pullDate = new Date();
 const customerComic = await CustomerComic.create({
   comic: comicId,
   customer: customerId,
@@ -164,15 +166,17 @@ const customerComic = await CustomerComic.create({
   pullDate,
   status: 'pulled'
 });
+await customerComic.save();   
 
-await customerComic.save();
-customerId.comics.push(customerComic._id);
-await customerId.save();
 return res.redirect(`${req.headers.referer}?message=Comic+added+to+pull+list&messageType=success`);
 
 }catch (err) {
     console.error("Error adding variant", err);
     return res.redirect(`${req.headers.referer}?message=Error+occurred+tell+Jacob+to+check+route&messageType=error`);
   }
+});
+
+router.post('/update', authenticate, asyunc (req, res) => {
+  
 })
 module.exports = router;

@@ -84,7 +84,7 @@
     {{#each comic.variants}}
     <div class="variant-card {{#if this.isIncentive}}incentive{{/if}}"
     data-variant-id="{{this._id}}"
-    data-name="this.name"
+    data-name="{{this.name}}"
     data-cover-image="{{this.coverImage}}"
     data-comic-id="{{../comic._id}}">
       {{#if this.coverImage}}
@@ -153,13 +153,13 @@
 </div>
 
 {{!-- edit varint form --}}
-<div class="modal" id="variant-edit">
+<div class="modal" id="variantEdit">
   <div class="modal-content">
     <span class="close">&times;</span>
     <img src="{{this.coverImage}}" alt="{{this.name}} Cover Image">
     <form action="/pull/variant" method="POST">
-    <input type="hidden" name="comicId" value="">
-    <input type="hidden" name="variantId" value="">
+     <input type="hidden" name="comicId" id="comicIdInput" value="">
+      <input type="hidden" name="variantId" id="variantIdInput" value="">
    {{#if errors}}
   <ul>
     {{#each errors}}
@@ -173,7 +173,7 @@
       <option value="{{this._id}}">{{this.firstName}} {{this.lastName}}</option>
       {{/each}}
     </select>
-    <button type="submit" class="my-button">Add Variant</button>
+    <button type="submit" class="my-button">Pull Variant</button>
     </form>
   </div>
 </div>

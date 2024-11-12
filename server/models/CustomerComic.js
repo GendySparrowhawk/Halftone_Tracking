@@ -15,6 +15,9 @@ const customerComicSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Series",
   },
+  variant: {
+    type: Schema.Types.ObjectId
+  },
   status: {
     type: String,
     enum: ["pulled", "ordered", "arrived", "picked up", "delayed"],
@@ -35,10 +38,6 @@ const customerComicSchema = new Schema({
   quantity: {
     type: Number,
     default: 1,
-  },
-  pullDate: {
-    type: Date,
-    default: Date.now,
   },
 });
 

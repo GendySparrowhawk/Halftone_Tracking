@@ -16,11 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const addNextSeriesBtn = document.querySelector("#addNextSeriesBtn");
   const variantBtn = document.querySelector("#addVariantBtn");
   const variantCards = document.querySelectorAll(".variant-card");
-  const variantEditModal = document.querySelector("#variant-edit");
-  
-  const variantIdInput = document.querySelector("#variantIdInput");
-  const variantCoverImage = document.querySelector("#variantCoverImage");
-  const variantModal = document.querySelector("#variantModal");
+  const comicIdInput = document.getElementById("comicIdInput");
+  const variantIdInput = document.getElementById("variantIdInput");
+  const variantModal = document.querySelector("#variantEdit");
 
   if (message) {
     alert(`${messageType.toUpperCase()}: ${decodeURIComponent(message)}`);
@@ -72,22 +70,21 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.target === variantForm) variantForm.style.display = "none";
     if (e.target === addNextSeriesModal)
       addNextSeriesModal.style.display = "none";
-    if (e.target === variantEditModal) variantEditModal.style.display = "none";
+    if (e.target === variantModal) variantModal.style.display = "none";
   };
 
   variantCards.forEach(card => {
     card.addEventListener("click", () => {
       const variantId = card.getAttribute('data-variant-id');
+      const comicId = card.getAttribute('data-comic-id');
       const coverImageUrl = card.getAttribute('data-cover-image');
 
-      variantIdInput.value = variantId;
       console.log("variantId:", variantId);
-      if (coverImageUrl) {
-        variantCoverImage.src = coverImageUrl;
-        variantCoverImage.alt = "Variant Cover Image";
+      if (comicId && variantId) {
+        comicIdInput.value = comicId;
+        variantIdInput.value = variantId;
       } else {
-        variantCoverImage.src = ''; // or a placeholder image if you prefer
-        variantCoverImage.alt = "No cover image available";
+        console.error("Comic ID or Variant ID missing on the card element");
       }
       variantModal.style.display = 'block';
     });
